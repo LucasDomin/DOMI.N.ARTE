@@ -17,14 +17,14 @@ export default function AdminPage() {
   const [imageManagerProject, setImageManagerProject] = useState<Project | null>(null);
 
   useEffect(() => {
-    if (localStorage.getItem("dominarte-admin") !== "auth") {
+    if (typeof window !== "undefined" && localStorage.getItem("dominarte-admin") !== "auth") {
       router.replace("/admin/login");
     }
   }, [router]);
 
   const fetchProjects = useCallback(async () => {
     try {
-      const res = await fetch("/api/projects");
+      const res = await fetch("/api/projects?includeDrafts=true");
       const data = await res.json();
       setProjects(data);
     } catch (error) {
@@ -89,81 +89,94 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-bg text-fg">
-      <header className="border-b border-border sticky top-0 z-40 bg-bg/80 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <header className="border-b border-border sticky top-0 z-40 bg-bg/85 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-sm font-black tracking-tight font-display text-fg">
-              DOMI.N.ARTE
+            <Link href="/" className="font-display text-lg text-fg">
+              DOMI<span className="text-accent">.</span>N<span className="text-accent">.</span>ARTE
             </Link>
-            <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">/ Admin</span>
+            <span className="text-[10px] tracking-[0.3em] uppercase text-fg-dim font-mono">/ Admin</span>
           </div>
-          <div className="flex items-center gap-4">
-            <Link href="/" className="text-xs text-fg-dim hover:text-fg transition-colors">Ver site</Link>
-            <button onClick={handleLogout} className="text-xs text-fg-dim hover:text-accent transition-colors">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="text-[11px] tracking-[0.15em] uppercase text-fg-muted hover:text-fg transition-colors">
+              Ver site
+            </Link>
+            <button onClick={handleLogout} className="text-[11px] tracking-[0.15em] uppercase text-fg-muted hover:text-accent transition-colors">
               Sair
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="flex items-end justify-between mb-10">
+      <main className="max-w-6xl mx-auto px-6 py-16">
+        <div className="flex items-end justify-between mb-12">
           <div>
-            <p className="text-[10px] tracking-[0.3em] uppercase text-fg-dim font-mono mb-2">Casos</p>
-            <h1 className="text-3xl font-black tracking-tight font-display text-fg">Portfólio</h1>
+            <p className="text-[10px] tracking-[0.3em] uppercase text-accent font-mono mb-3">Cases</p>
+            <h1 className="font-display text-5xl text-fg leading-none">Portfólio</h1>
           </div>
           <button
             onClick={handleCreateNew}
-            className="px-5 py-2.5 rounded-full bg-accent text-white text-[11px] font-bold tracking-[0.1em] uppercase hover:bg-accent-hover transition-colors"
+            className="px-5 py-3 rounded-full bg-accent text-bg text-[11px] font-bold tracking-[0.1em] uppercase hover:bg-accent-hover transition-colors"
           >
             + Novo Case
           </button>
         </div>
 
         {loading ? (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {[0, 1, 2].map((i) => (
-              <div key={i} className="h-16 rounded-xl bg-bg-elevated animate-pulse" />
+              <div key={i} className="h-20 rounded-xl bg-bg-soft animate-pulse" />
             ))}
           </div>
         ) : (
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-            <div className="border border-border rounded-2xl overflow-hidden">
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <div className="border border-border rounded-2xl overflow-hidden bg-bg-soft/30">
               <table className="w-full">
-                <thead className="bg-bg-elevated border-b border-border">
+                <thead className="border-b border-border">
                   <tr>
-                    <th className="text-left py-4 px-6 text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono font-normal">Projeto</th>
-                    <th className="text-left py-4 px-6 text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono font-normal hidden md:table-cell">Categoria</th>
-                    <th className="text-left py-4 px-6 text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono font-normal hidden md:table-cell">Ano</th>
-                    <th className="text-right py-4 px-6 text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono font-normal">Ações</th>
+                    <th className="text-left py-5 px-6 text-[10px] tracking-[0.25em] uppercase text-fg-dim font-mono font-normal">Projeto</th>
+                    <th className="text-left py-5 px-6 text-[10px] tracking-[0.25em] uppercase text-fg-dim font-mono font-normal hidden md:table-cell">Categoria</th>
+                    <th className="text-left py-5 px-6 text-[10px] tracking-[0.25em] uppercase text-fg-dim font-mono font-normal hidden md:table-cell">Ano</th>
+                    <th className="text-left py-5 px-6 text-[10px] tracking-[0.25em] uppercase text-fg-dim font-mono font-normal hidden md:table-cell">Status</th>
+                    <th className="text-right py-5 px-6 text-[10px] tracking-[0.25em] uppercase text-fg-dim font-mono font-normal">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {projects.map((project) => (
-                    <tr key={project.id} className="border-b border-border last:border-b-0 hover:bg-bg-elevated/50 transition-colors">
-                      <td className="py-4 px-6">
-                        <div className="font-bold text-fg font-display">{project.title}</div>
-                        <div className="text-xs text-fg-dim">{project.client || "—"}</div>
+                    <tr key={project.id} className="border-b border-border last:border-b-0 hover:bg-bg-soft transition-colors">
+                      <td className="py-5 px-6">
+                        <div className="flex items-center gap-2">
+                          <div className="font-display text-lg text-fg">{project.title}</div>
+                          {project.featured && (
+                            <span className="px-2 py-0.5 rounded-full text-[9px] bg-accent/10 text-accent border border-accent/20 tracking-wider uppercase">Destaque</span>
+                          )}
+                        </div>
+                        <div className="text-xs text-fg-muted mt-0.5">{project.client || "—"}</div>
                       </td>
-                      <td className="py-4 px-6 text-xs text-fg-muted capitalize hidden md:table-cell">{project.category}</td>
-                      <td className="py-4 px-6 text-xs text-fg-muted hidden md:table-cell">{project.year || "—"}</td>
-                      <td className="py-4 px-6 text-right">
-                        <div className="flex items-center justify-end gap-3">
+                      <td className="py-5 px-6 text-xs text-fg-muted capitalize hidden md:table-cell">{project.category}</td>
+                      <td className="py-5 px-6 text-xs text-fg-muted hidden md:table-cell">{project.year || "—"}</td>
+                      <td className="py-5 px-6 hidden md:table-cell">
+                        <span className={`text-[10px] tracking-[0.15em] uppercase font-mono ${project.isDraft ? "text-fg-dim" : "text-accent"}`}>
+                          {project.isDraft ? "Rascunho" : "Publicado"}
+                        </span>
+                      </td>
+                      <td className="py-5 px-6 text-right">
+                        <div className="flex items-center justify-end gap-4">
                           <button
                             onClick={() => setImageManagerProject(project)}
-                            className="text-[10px] tracking-[0.1em] uppercase text-fg-dim hover:text-accent transition-colors"
+                            className="text-[10px] tracking-[0.1em] uppercase text-fg-muted hover:text-accent transition-colors"
                           >
                             Imagens
                           </button>
                           <button
                             onClick={() => handleEdit(project)}
-                            className="text-[10px] tracking-[0.1em] uppercase text-fg-dim hover:text-accent transition-colors"
+                            className="text-[10px] tracking-[0.1em] uppercase text-fg-muted hover:text-accent transition-colors"
                           >
                             Editar
                           </button>
                           <button
                             onClick={() => handleDelete(project.id)}
-                            className="text-[10px] tracking-[0.1em] uppercase text-fg-dim hover:text-red-500 transition-colors"
+                            className="text-[10px] tracking-[0.1em] uppercase text-fg-muted hover:text-red-500 transition-colors"
                           >
                             Deletar
                           </button>

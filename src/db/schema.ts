@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
 
 export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
@@ -12,14 +12,24 @@ export const projects = pgTable("projects", {
   duration: text("duration").default(""),
   format: text("format").default(""),
   coverImage: text("cover_image"),
-  color: text("color").default("#C9A96E"), // accent color per project!
-  video: text("video").default(""),
-  poster: text("poster").default(""),
+  color: text("color").default("#C9A56C"),
+
+  // Obras Narrative (Momento 3)
   description: text("description").notNull(),
+  context: text("context").default(""),
+  concept: text("concept").default(""),
+  direction: text("direction").default(""),
+  result: text("result").default(""),
+
+  // State
   isDraft: boolean("is_draft").notNull().default(false),
-  stills: jsonb("stills").default([]), // array of { url: string, type: string, order: number }
-  credits: jsonb("credits").default([]), // array of { role: string, name: string }
-  awards: jsonb("awards").default([]), // array of strings
+  featured: boolean("featured").notNull().default(false),
+
+  // Media
+  stills: jsonb("stills").default([]),
+  credits: jsonb("credits").default([]),
+  awards: jsonb("awards").default([]),
+
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -11,46 +11,41 @@ interface ProjectFormProps {
   onSubmit: (data: Partial<Project>) => void;
 }
 
+const EMPTY: Partial<Project> = {
+  title: "",
+  subtitle: "",
+  slug: "",
+  description: "",
+  context: "",
+  concept: "",
+  direction: "",
+  result: "",
+  category: "identidade",
+  client: "",
+  year: "",
+  location: "",
+  duration: "",
+  format: "",
+  coverImage: "",
+  color: "#C9A56C",
+  isDraft: false,
+  featured: false,
+};
+
 export default function ProjectForm({ project, open, onOpenChange, onSubmit }: ProjectFormProps) {
-  const [formData, setFormData] = useState<Partial<Project>>({
-    title: "",
-    subtitle: "",
-    slug: "",
-    description: "",
-    category: "identidade",
-    client: "",
-    year: "",
-    location: "",
-    format: "",
-    coverImage: "",
-    color: "#FF3D00",
-    isDraft: false,
-  });
+  const [data, setData] = useState<Partial<Project>>(EMPTY);
 
   useEffect(() => {
-    if (project) {
-      setFormData({ ...project });
-    } else {
-      setFormData({
-        title: "",
-        subtitle: "",
-        slug: "",
-        description: "",
-        category: "identidade",
-        client: "",
-        year: "",
-        location: "",
-        format: "",
-        coverImage: "",
-        color: "#FF3D00",
-        isDraft: false,
-      });
-    }
+    setData(project ? { ...project } : EMPTY);
   }, [project, open]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const update = <K extends keyof Project>(key: K, value: Project[K] | string | boolean) => {
+    setData((d) => ({ ...d, [key]: value }));
+  };
+
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit(data);
   };
 
   return (
@@ -61,171 +56,224 @@ export default function ProjectForm({ project, open, onOpenChange, onSubmit }: P
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-bg/80 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-bg/85 backdrop-blur-sm z-50"
             onClick={() => onOpenChange(false)}
           />
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
-            className="fixed inset-x-4 top-[5vh] md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-[600px] max-h-[85vh] overflow-y-auto bg-bg-elevated border border-border rounded-2xl z-50"
+            className="fixed inset-x-4 top-[5vh] md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-[680px] max-h-[90vh] overflow-y-auto bg-bg-card border border-border-light rounded-2xl z-50 shadow-2xl"
           >
-            <form onSubmit={handleSubmit} className="p-6 md:p-8">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-xl font-black tracking-tight font-display text-fg">
-                  {project ? "Editar Case" : "Novo Case"}
-                </h2>
+            <form onSubmit={submit} className="p-6 md:p-8">
+              <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
+                <div>
+                  <h2 className="font-display text-2xl text-fg">
+                    {project ? "Editar Obra" : "Nova Obra"}
+                  </h2>
+                  <p className="text-xs text-fg-muted mt-1">
+                    Defina Contexto, Conceito, Direção e Resultado para compor a exposição.
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  className="text-fg-dim hover:text-fg transition-colors"
+                  className="text-fg-dim hover:text-fg text-xl px-2"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="space-y-5">
-                <div className="grid grid-cols-2 gap-4">
-                  <label className="block">
-                    <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Título</span>
-                    <input
-                      type="text"
-                      value={formData.title || ""}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                      required
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Slug</span>
-                    <input
-                      type="text"
-                      value={formData.slug || ""}
-                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                      className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                      required
-                    />
-                  </label>
-                </div>
-
-                <label className="block">
-                  <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Subtítulo</span>
-                  <input
-                    type="text"
-                    value={formData.subtitle || ""}
-                    onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                    className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                  />
-                </label>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <label className="block">
-                    <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Categoria</span>
-                    <select
-                      value={formData.category || "identidade"}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                    >
-                      <option value="identidade">Identidade Visual</option>
-                      <option value="web">Sites & Páginas</option>
-                      <option value="saas">SaaS & Produtos</option>
-                    </select>
-                  </label>
-                  <label className="block">
-                    <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Ano</span>
-                    <input
-                      type="text"
-                      value={formData.year || ""}
-                      onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                      className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                    />
-                  </label>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <label className="block">
-                    <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Cliente</span>
-                    <input
-                      type="text"
-                      value={formData.client || ""}
-                      onChange={(e) => setFormData({ ...formData, client: e.target.value })}
-                      className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Local</span>
-                    <input
-                      type="text"
-                      value={formData.location || ""}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                    />
-                  </label>
-                </div>
-
-                <label className="block">
-                  <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Formato</span>
-                  <input
-                    type="text"
-                    value={formData.format || ""}
-                    onChange={(e) => setFormData({ ...formData, format: e.target.value })}
-                    className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">URL da Capa</span>
-                  <input
-                    type="text"
-                    value={formData.coverImage || ""}
-                    onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-                    className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Cor de Destaque</span>
-                  <div className="flex items-center gap-3 mt-2">
-                    <input
-                      type="color"
-                      value={formData.color || "#FF3D00"}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      className="w-10 h-10 rounded-lg bg-transparent border border-border cursor-pointer"
-                    />
-                    <input
-                      type="text"
-                      value={formData.color || ""}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      className="flex-1 bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors"
-                    />
+              <div className="space-y-6">
+                {/* Identification */}
+                <Section title="Identificação">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Título">
+                      <input
+                        type="text"
+                        value={data.title || ""}
+                        onChange={(e) => update("title", e.target.value)}
+                        className={inputClass}
+                        required
+                      />
+                    </Field>
+                    <Field label="Slug (URL)">
+                      <input
+                        type="text"
+                        value={data.slug || ""}
+                        onChange={(e) => update("slug", e.target.value)}
+                        className={inputClass}
+                        required
+                      />
+                    </Field>
                   </div>
-                </label>
+                  <Field label="Subtítulo">
+                    <input
+                      type="text"
+                      value={data.subtitle || ""}
+                      onChange={(e) => update("subtitle", e.target.value)}
+                      className={inputClass}
+                    />
+                  </Field>
+                </Section>
 
-                <label className="block">
-                  <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">Descrição</span>
-                  <textarea
-                    value={formData.description || ""}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={4}
-                    className="mt-2 w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors resize-none"
-                    required
-                  />
-                </label>
+                {/* Meta */}
+                <Section title="Metadados">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Categoria">
+                      <select
+                        value={data.category || "identidade"}
+                        onChange={(e) => update("category", e.target.value)}
+                        className={inputClass}
+                      >
+                        <option value="identidade">Identidade Visual</option>
+                        <option value="web">Experiência Web</option>
+                        <option value="saas">SaaS & Produto Digital</option>
+                      </select>
+                    </Field>
+                    <Field label="Ano">
+                      <input
+                        type="text"
+                        value={data.year || ""}
+                        onChange={(e) => update("year", e.target.value)}
+                        className={inputClass}
+                      />
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Cliente / Organização">
+                      <input
+                        type="text"
+                        value={data.client || ""}
+                        onChange={(e) => update("client", e.target.value)}
+                        className={inputClass}
+                      />
+                    </Field>
+                    <Field label="Localização">
+                      <input
+                        type="text"
+                        value={data.location || ""}
+                        onChange={(e) => update("location", e.target.value)}
+                        className={inputClass}
+                      />
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Duração">
+                      <input
+                        type="text"
+                        value={data.duration || ""}
+                        onChange={(e) => update("duration", e.target.value)}
+                        className={inputClass}
+                        placeholder="ex: 12 semanas"
+                      />
+                    </Field>
+                    <Field label="Formato / Suporte">
+                      <input
+                        type="text"
+                        value={data.format || ""}
+                        onChange={(e) => update("format", e.target.value)}
+                        className={inputClass}
+                      />
+                    </Field>
+                  </div>
+                  <Field label="URL da Imagem Principal">
+                    <input
+                      type="text"
+                      value={data.coverImage || ""}
+                      onChange={(e) => update("coverImage", e.target.value)}
+                      className={inputClass}
+                    />
+                  </Field>
+                </Section>
+
+                {/* Narrative (Momento 3) */}
+                <Section title="Narrativa da Obra (Exposição)">
+                  <Field label="Resumo / Sinopse">
+                    <textarea
+                      value={data.description || ""}
+                      onChange={(e) => update("description", e.target.value)}
+                      rows={2}
+                      className={inputClass + " resize-none"}
+                      required
+                    />
+                  </Field>
+                  <Field label="Contexto">
+                    <textarea
+                      value={data.context || ""}
+                      onChange={(e) => update("context", e.target.value)}
+                      rows={3}
+                      className={inputClass + " resize-none"}
+                      placeholder="Qual o cenário, tensão ou desafio inicial da marca?"
+                    />
+                  </Field>
+                  <Field label="Conceito">
+                    <textarea
+                      value={data.concept || ""}
+                      onChange={(e) => update("concept", e.target.value)}
+                      rows={3}
+                      className={inputClass + " resize-none"}
+                      placeholder="Qual a ideia central e analogia criativa?"
+                    />
+                  </Field>
+                  <Field label="Direção">
+                    <textarea
+                      value={data.direction || ""}
+                      onChange={(e) => update("direction", e.target.value)}
+                      rows={3}
+                      className={inputClass + " resize-none"}
+                      placeholder="Qual a tradução visual, sensorial e estética executada?"
+                    />
+                  </Field>
+                  <Field label="Resultado">
+                    <textarea
+                      value={data.result || ""}
+                      onChange={(e) => update("result", e.target.value)}
+                      rows={3}
+                      className={inputClass + " resize-none"}
+                      placeholder="Conquistas, percepção gerada, números ou consolidação."
+                    />
+                  </Field>
+                </Section>
+
+                {/* Flags */}
+                <Section title="Curadoria">
+                  <div className="flex items-center gap-8 pt-1">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={data.featured || false}
+                        onChange={(e) => update("featured", e.target.checked)}
+                        className="w-4 h-4 accent-accent"
+                      />
+                      <span className="text-sm text-fg-muted">Obra em Destaque</span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={data.isDraft || false}
+                        onChange={(e) => update("isDraft", e.target.checked)}
+                        className="w-4 h-4 accent-accent"
+                      />
+                      <span className="text-sm text-fg-muted">Rascunho (Oculto)</span>
+                    </label>
+                  </div>
+                </Section>
               </div>
 
-              <div className="flex items-center justify-end gap-3 mt-8">
+              <div className="flex items-center justify-end gap-4 mt-10 pt-6 border-t border-border">
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
-                  className="px-5 py-2.5 rounded-full border border-border text-xs font-bold tracking-[0.1em] uppercase text-fg-dim hover:text-fg hover:border-fg-muted transition-colors"
+                  className="px-6 py-3 rounded-full border border-border-light text-[11px] font-medium tracking-[0.15em] uppercase text-fg-muted hover:text-fg transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-full bg-accent text-white text-xs font-bold tracking-[0.1em] uppercase hover:bg-accent-hover transition-colors"
+                  className="px-6 py-3 rounded-full bg-fg text-bg text-[11px] font-bold tracking-[0.15em] uppercase hover:bg-accent transition-colors"
                 >
-                  Salvar
+                  Salvar Obra
                 </button>
               </div>
             </form>
@@ -233,5 +281,28 @@ export default function ProjectForm({ project, open, onOpenChange, onSubmit }: P
         </>
       )}
     </AnimatePresence>
+  );
+}
+
+const inputClass =
+  "w-full bg-bg border border-border rounded-lg px-4 py-2.5 text-sm text-fg outline-none focus:border-accent transition-colors";
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="space-y-4 pt-2">
+      <legend className="text-[10px] tracking-[0.3em] uppercase text-accent font-mono mb-2">
+        {title}
+      </legend>
+      {children}
+    </fieldset>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono">{label}</span>
+      <div className="mt-1.5">{children}</div>
+    </label>
   );
 }
