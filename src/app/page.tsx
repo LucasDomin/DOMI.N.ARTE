@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import Loader from "@/components/loader";
 import NavMomento from "@/components/nav";
-import HeroImpacto from "@/components/hero";
+import ParallaxHero from "@/components/parallax-hero";
 import ManifestoMomento2 from "@/components/manifesto";
 import WorkShowcaseMomento3 from "@/components/work-showcase";
 import ProcessMomento4 from "@/components/process";
@@ -29,7 +29,7 @@ export default function HomePageMomento() {
           <div className="grain" />
           <div className="vignette" />
           <NavMomento />
-          <HeroImpacto />
+          <ParallaxHero />
           <ManifestoMomento2 />
           <WorkShowcaseMomento3 />
           <ProcessMomento4 />

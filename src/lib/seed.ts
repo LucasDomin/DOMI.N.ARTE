@@ -1,115 +1,43 @@
 import "server-only";
 import { db } from "@/db";
-import { projects } from "@/db/schema";
+import { projects, siteConfig } from "@/db/schema";
 import { sql } from "drizzle-orm";
-
-const SEED_PROJECTS = [
-  {
-    slug: "nordic-brew",
-    title: "Nordic Brew Co.",
-    subtitle: "Sistema completo de identidade visual",
-    category: "identidade",
-    client: "Nordic Brew Co.",
-    year: "2025",
-    location: "Copenhague, Dinamarca",
-    format: "Brand Identity · Packaging · Manual",
-    coverImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80",
-    color: "#FF3D00",
-    description: "Identidade visual completa para uma cervejaria artesanal nórdica. Logo, tipografia, paleta, embalagens e manual de marca de 80 páginas.",
-    isDraft: false,
-    stills: [],
-    credits: [],
-    awards: [],
-  },
-  {
-    slug: "vertex-ai",
-    title: "Vertex AI",
-    subtitle: "Landing page de alta conversão",
-    category: "web",
-    client: "Vertex Technologies",
-    year: "2025",
-    location: "São Paulo, Brasil",
-    format: "Landing Page · Next.js · Framer Motion",
-    coverImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
-    color: "#4D7CFF",
-    description: "Landing page para startup de IA. Desenvolvida em Next.js com animações Framer Motion, otimização Core Web Vitals e conversão aumentada em 340%.",
-    isDraft: false,
-    stills: [],
-    credits: [],
-    awards: [],
-  },
-  {
-    slug: "flux-dashboard",
-    title: "Flux Dashboard",
-    subtitle: "Plataforma SaaS de analytics",
-    category: "saas",
-    client: "Flux Analytics",
-    year: "2024",
-    location: "Berlim, Alemanha",
-    format: "SaaS Platform · Design System · React",
-    coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
-    color: "#00E599",
-    description: "Plataforma SaaS completa para analytics. Dashboard em tempo real, design system modular e arquitetura escalável.",
-    isDraft: false,
-    stills: [],
-    credits: [],
-    awards: [],
-  },
-  {
-    slug: "aurum-jewelry",
-    title: "Aurum Jewelry",
-    subtitle: "E-commerce de joias de luxo",
-    category: "web",
-    client: "Aurum Joalheria",
-    year: "2024",
-    location: "Milão, Itália",
-    format: "E-commerce · Shopify Plus · Headless",
-    coverImage: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80",
-    color: "#FF3D00",
-    description: "E-commerce headless para joalheria de luxo. Shopify Plus no backend, Next.js no frontend, visualizações 3D e performance 99/100 no Lighthouse.",
-    isDraft: false,
-    stills: [],
-    credits: [],
-    awards: [],
-  },
-  {
-    slug: "pulse-health",
-    title: "Pulse Health",
-    subtitle: "App de saúde e bem-estar",
-    category: "saas",
-    client: "Pulse Health Tech",
-    year: "2024",
-    location: "São Paulo, Brasil",
-    format: "Mobile App · React Native · Backend",
-    coverImage: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
-    color: "#00E599",
-    description: "Aplicativo de saúde com tracking de métricas, integração com wearables e recomendações por IA. 50K usuários ativos no primeiro mês.",
-    isDraft: false,
-    stills: [],
-    credits: [],
-    awards: [],
-  },
-  {
-    slug: "terroir-wines",
-    title: "Terroir Wines",
-    subtitle: "Rebranding de vinícola boutique",
-    category: "identidade",
-    client: "Vinícola Terroir",
-    year: "2024",
-    location: "Mendoza, Argentina",
-    format: "Rebrand · Packaging · Web",
-    coverImage: "https://images.unsplash.com/photo-1474722883778-792e7990302f?auto=format&fit=crop&w=1200&q=80",
-    color: "#FF3D00",
-    description: "Rebranding completo para vinícola boutique. Identidade visual, rótulos, site institucional e materiais de ponto de venda.",
-    isDraft: false,
-    stills: [],
-    credits: [],
-    awards: [],
-  },
-];
+import { DEFAULT_PROJECTS, DEFAULT_SITE_CONFIG } from "./defaults";
 
 export async function seedIfEmpty() {
-  const count = await db.select({ c: sql<number>`count(*)` }).from(projects);
-  if (Number(count[0]?.c ?? 0) > 0) return;
-  await db.insert(projects).values(SEED_PROJECTS);
+  try {
+    const count = await db.select({ c: sql<number>`count(*)` }).from(projects);
+    if (Number(count[0]?.c ?? 0) === 0) {
+      // Map out id from DEFAULT_PROJECTS since id is autoincrement serial primary key
+      const payload = DEFAULT_PROJECTS.map(({ id, ...p }) => ({
+        ...p,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }));
+      await db.insert(projects).values(payload);
+    }
+
+    const configCount = await db.select({ c: sql<number>`count(*)` }).from(siteConfig);
+    if (Number(configCount[0]?.c ?? 0) === 0) {
+      await db.insert(siteConfig).values({
+        id: "default",
+        manifestoTitle: DEFAULT_SITE_CONFIG.manifestoTitle,
+        manifestoText1: DEFAULT_SITE_CONFIG.manifestoText1,
+        manifestoText2: DEFAULT_SITE_CONFIG.manifestoText2,
+        manifestoText3: DEFAULT_SITE_CONFIG.manifestoText3,
+        aboutTitle: DEFAULT_SITE_CONFIG.aboutTitle,
+        aboutText1: DEFAULT_SITE_CONFIG.aboutText1,
+        aboutText2: DEFAULT_SITE_CONFIG.aboutText2,
+        contactEmail: DEFAULT_SITE_CONFIG.contactEmail,
+        contactPhone: DEFAULT_SITE_CONFIG.contactPhone,
+        contactAvailability: DEFAULT_SITE_CONFIG.contactAvailability,
+        socialInstagram: DEFAULT_SITE_CONFIG.socialInstagram,
+        socialBehance: DEFAULT_SITE_CONFIG.socialBehance,
+        socialLinkedin: DEFAULT_SITE_CONFIG.socialLinkedin,
+        updatedAt: new Date(),
+      });
+    }
+  } catch (error) {
+    console.error("Seeding failed:", error);
+  }
 }

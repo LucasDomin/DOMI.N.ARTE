@@ -1,12 +1,24 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useReveal } from "@/hooks/useReveal";
+import { DEFAULT_SITE_CONFIG } from "@/lib/defaults";
+import type { SiteConfig } from "@/db/schema";
 
 export default function ConviteMomento5() {
   const ref = useRef<HTMLElement>(null);
   const revealRef = useReveal<HTMLDivElement>();
+  const [config, setConfig] = useState<Partial<SiteConfig>>(DEFAULT_SITE_CONFIG);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) setConfig(data);
+      })
+      .catch(() => {});
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -57,7 +69,7 @@ export default function ConviteMomento5() {
           style={{ transitionDelay: "250ms" }}
         >
           <a
-            href="mailto:contato@dominiarte.com"
+            href={`mailto:${config.contactEmail || "contato@dominiarte.com"}`}
             className="group inline-flex items-center gap-4 px-10 py-6 rounded-full bg-fg text-bg text-xs font-bold tracking-[0.2em] uppercase hover:bg-accent transition-all duration-500 shadow-2xl"
           >
             <span>Iniciar Conversa Privada</span>
@@ -84,10 +96,10 @@ export default function ConviteMomento5() {
               Contato Direto
             </div>
             <a
-              href="mailto:contato@dominiarte.com"
+              href={`mailto:${config.contactEmail || "contato@dominiarte.com"}`}
               className="font-display italic text-2xl text-fg hover:text-accent transition-colors duration-300 block"
             >
-              contato@dominiarte.com
+              {config.contactEmail || "contato@dominiarte.com"}
             </a>
           </div>
           <div>
@@ -95,7 +107,7 @@ export default function ConviteMomento5() {
               Disponibilidade
             </div>
             <div className="font-display italic text-2xl text-fg">
-              Aberto para Q1 2026
+              {config.contactAvailability || "Aberto para Q1 2026"}
             </div>
           </div>
           <div>
@@ -103,7 +115,7 @@ export default function ConviteMomento5() {
               Direção Autoral
             </div>
             <div className="font-display italic text-2xl text-fg">
-              Estúdio DOMI.N.ARTE
+              {config.aboutTitle || "Estúdio DOMI.N.ARTE"}
             </div>
           </div>
         </div>

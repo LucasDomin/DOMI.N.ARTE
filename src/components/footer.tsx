@@ -1,8 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { DEFAULT_SITE_CONFIG } from "@/lib/defaults";
+import type { SiteConfig } from "@/db/schema";
 
 export default function FooterMomento() {
+  const [config, setConfig] = useState<Partial<SiteConfig>>(DEFAULT_SITE_CONFIG);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) setConfig(data);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <footer className="relative border-t border-border bg-bg select-none overflow-hidden">
       {/* Giant expressive autoral signature */}
@@ -46,9 +60,36 @@ export default function FooterMomento() {
               Exposições / Social
             </div>
             <ul className="space-y-3 text-xs md:text-sm text-fg-muted font-light">
-              <li><a href="#" className="hover:text-fg transition-colors">Instagram @dominarte</a></li>
-              <li><a href="#" className="hover:text-fg transition-colors">Behance / Selected</a></li>
-              <li><a href="#" className="hover:text-fg transition-colors">LinkedIn / Executive</a></li>
+              <li>
+                <a
+                  href={config.socialInstagram || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-fg transition-colors"
+                >
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a
+                  href={config.socialBehance || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-fg transition-colors"
+                >
+                  Behance / Selected
+                </a>
+              </li>
+              <li>
+                <a
+                  href={config.socialLinkedin || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-fg transition-colors"
+                >
+                  LinkedIn / Executive
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -57,17 +98,31 @@ export default function FooterMomento() {
               Presença
             </div>
             <ul className="space-y-3 text-xs md:text-sm text-fg-muted font-light">
-              <li><a href="mailto:contato@dominiarte.com" className="hover:text-accent transition-colors font-display italic text-base">contato@dominiarte.com</a></li>
-              <li className="text-fg-dim font-mono text-[11px] pt-1">SÃO PAULO · BRASIL</li>
-              <li className="pt-2"><Link href="/admin/login" className="text-[10px] uppercase font-mono tracking-widest text-fg-dim hover:text-fg transition-colors">Acesso Curadoria (Admin)</Link></li>
+              <li>
+                <a
+                  href={`mailto:${config.contactEmail || "contato@dominiarte.com"}`}
+                  className="hover:text-accent transition-colors font-display italic text-base"
+                >
+                  {config.contactEmail || "contato@dominiarte.com"}
+                </a>
+              </li>
+              {config.contactPhone && (
+                <li className="text-fg-dim font-mono text-[11px] pt-1">{config.contactPhone}</li>
+              )}
+              <li className="pt-2">
+                <Link
+                  href="/admin/login"
+                  className="text-[10px] uppercase font-mono tracking-widest text-fg-dim hover:text-fg transition-colors"
+                >
+                  Acesso Curadoria (Admin)
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-16 pt-10 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] tracking-[0.25em] uppercase font-mono text-fg-dim">
-          <p>
-            © 2025 DOMI.N.ARTE — ASSINATURA CRIATIVA AUTORAL
-          </p>
+          <p>© 2025 DOMI.N.ARTE — ASSINATURA CRIATIVA AUTORAL</p>
           <p className="flex items-center gap-2">
             <span>OBRA DIGITAL VIVA</span>
             <span className="w-1 h-1 rounded-full bg-accent" />
