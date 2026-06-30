@@ -43,21 +43,36 @@ export default function ImageManager({ project, onClose, onUpdate }: ImageManage
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   const handleFileUpload = useCallback(
     async (files: FileList | null) => {
       if (!files) return;
+      setUploading(true);
+      setUploadError(null);
       const next: Still[] = [];
-      for (const file of Array.from(files)) {
-        if (!file.type.startsWith("image/")) continue;
-        const url = await new Promise<string>((res, rej) => {
-          const reader = new FileReader();
-          reader.onload = () => res(reader.result as string);
-          reader.onerror = rej;
-          reader.readAsDataURL(file);
-        });
-        next.push({ url, type: "app-screen", order: stills.length + next.length });
+      try {
+        for (const file of Array.from(files)) {
+          if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) continue;
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await fetch("/api/upload", { method: "POST", body: fd });
+          const data = await res.json();
+          if (!res.ok) {
+            setUploadError(data.error || "Falha no upload.");
+            continue;
+          }
+          next.push({
+            url: data.url,
+            type: file.type.startsWith("video/") ? "video" : "app-screen",
+            order: stills.length + next.length,
+          });
+        }
+        setStills([...stills, ...next].map((s, i) => ({ ...s, order: i })));
+      } finally {
+        setUploading(false);
       }
-      setStills([...stills, ...next].map((s, i) => ({ ...s, order: i })));
     },
     [stills]
   );
@@ -170,16 +185,20 @@ export default function ImageManager({ project, onClose, onUpdate }: ImageManage
             className="flex flex-col items-center justify-center gap-3 py-10 border border-dashed border-border rounded-xl bg-bg cursor-pointer hover:border-accent/50 transition-colors"
           >
             <div className="text-[10px] tracking-[0.2em] uppercase text-fg-dim font-mono text-center">
-              Arraste imagens ou clique para upload
+              {uploading ? "Enviando…" : "Arraste imagens / vídeos ou clique para upload"}
             </div>
             <input
               type="file"
               multiple
-              accept="image/*"
+              accept="image/*,video/*"
               className="hidden"
+              disabled={uploading}
               onChange={(e) => handleFileUpload(e.target.files)}
             />
           </label>
+          {uploadError && (
+            <p className="mt-3 text-[11px] text-red-400 font-mono">{uploadError}</p>
+          )}
 
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="stills" direction="horizontal">

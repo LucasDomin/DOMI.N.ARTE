@@ -42,12 +42,7 @@ export default function AdminPage() {
   const [savingSettings, setSavingSettings] = useState(false);
   const [settingsSuccess, setSavingSettingsSuccess] = useState(false);
 
-  // Check auth
-  useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem("dominarte-admin") !== "auth") {
-      router.replace("/admin/login");
-    }
-  }, [router]);
+  // Auth is enforced by middleware (httpOnly cookie). No client-side gate needed.
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -208,9 +203,10 @@ export default function AdminPage() {
     setFormOpen(true);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("dominarte-admin");
+  const handleLogout = async () => {
+    await fetch("/api/auth", { method: "DELETE" }).catch(() => {});
     router.replace("/admin/login");
+    router.refresh();
   };
 
   return (
