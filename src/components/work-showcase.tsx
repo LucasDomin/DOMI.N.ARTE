@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import type { Project } from "@/db/schema";
 import { useReveal } from "@/hooks/useReveal";
@@ -157,21 +157,14 @@ function ObraExposicao({ project, index }: { project: Project; index: number }) 
   );
 }
 
-export default function WorkShowcaseMomento3() {
-  const [projects, setProjects] = useState<Project[]>([]);
+export default function WorkShowcaseMomento3({
+  initialProjects = [],
+}: {
+  initialProjects?: Project[];
+}) {
+  const [projects] = useState<Project[]>(initialProjects);
   const [filter, setFilter] = useState("todos");
   const ref = useReveal<HTMLDivElement>();
-
-  useEffect(() => {
-    fetch("/api/projects")
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setProjects(data.filter((p) => !p.isDraft));
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   const filteredProjects = projects.filter((project) => {
     if (filter === "todos") return true;

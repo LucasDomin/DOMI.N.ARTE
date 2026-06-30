@@ -26,14 +26,47 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DOMI.N.ARTE — Direção criativa para marcas que lideram",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://dominarte.vercel.app"),
+  title: {
+    default: "DOMI.N.ARTE — Direção criativa para marcas que lideram",
+    template: "%s — DOMI.N.ARTE",
+  },
   description:
-    "Estúdio de design independente. Identidade visual, sites e produtos SaaS desenhados como sistema único para marcas que se posicionam como referência.",
+    "Plataforma editorial de direção criativa. Identidade visual, motion, storytelling cinematográfico. Estúdio independente.",
+  keywords: [
+    "direção criativa",
+    "branding",
+    "identidade visual",
+    "motion design",
+    "storytelling visual",
+    "design editorial",
+    "arte digital",
+  ],
+  authors: [{ name: "DOMI.N.ARTE" }],
+  creator: "DOMI.N.ARTE",
   openGraph: {
     title: "DOMI.N.ARTE — Direção criativa para marcas que lideram",
     description:
-      "Identidade visual, sites e produtos SaaS desenhados como sistema único.",
+      "Interseção autoral entre branding, arte digital, motion e storytelling cinematográfico.",
     type: "website",
+    locale: "pt_BR",
+    siteName: "DOMI.N.ARTE",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DOMI.N.ARTE",
+    description: "Plataforma editorial de direção criativa.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
