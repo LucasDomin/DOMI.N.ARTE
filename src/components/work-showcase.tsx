@@ -3,251 +3,182 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import type { Project } from "@/db/schema";
-import { useReveal } from "@/hooks/useReveal";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  identidade: "Branding",
-  branding: "Branding",
-  motion: "Motion",
-  film: "Film",
-  photography: "Photography",
-  "creative-direction": "Creative Direction",
+const EASE = [0.16, 1, 0.3, 1] as const;
+
+const CAT: Record<string, string> = {
+  identidade: "Branding", branding: "Branding", motion: "Motion",
+  film: "Film", photography: "Photography", "creative-direction": "Dir. Criativa",
 };
 
-const FILTER_CATEGORIES = [
-  { id: "todos", label: "Todos" },
-  { id: "branding", label: "Branding" },
-  { id: "motion", label: "Motion" },
-  { id: "film", label: "Film" },
-  { id: "photography", label: "Photography" },
-  { id: "creative-direction", label: "Creative Direction" },
-];
+const FILTERS = ["Todos", "Branding", "Motion", "Film", "Photography", "Dir. Criativa"];
 
-function ObraExposicao({ project, index }: { project: Project; index: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isReverse = index % 2 === 1;
-  const number = String(index + 1).padStart(2, "0");
+// ─── Single obra — full-bleed cinematic row ────────────────────────────────────
+// Each project takes the full width. Image is massive, text appears on scroll.
+// No grid. No cards. Editorial horizontal rhythm.
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+function Obra({ project, index }: { project: Project; index: number }) {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 90%", "start 10%"] });
 
-  const imgY = useTransform(scrollYProgress, [0, 1], [-45, 45]);
-  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08]);
+  const imgScale  = useTransform(scrollYProgress, [0, 1], [1.06, 1.0]);
+  const imgY      = useTransform(scrollYProgress, [0, 1], [-30, 30]);
+  const lineW     = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+  const textOp    = useTransform(scrollYProgress, [0.1, 0.5], [0, 1]);
+  const textY     = useTransform(scrollYProgress, [0.1, 0.5], [20, 0]);
+
+  const num = String(index + 1).padStart(2, "0");
+  const cat = CAT[project.category] || project.category;
+  const isEven = index % 2 === 0;
 
   return (
-    <article
-      ref={ref}
-      className="relative py-24 md:py-36 border-t border-border first:border-t-0"
-    >
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20 items-center">
-        {/* Gallery Image (Editorial 7 col) */}
-        <div className={`lg:col-span-7 ${isReverse ? "lg:order-2" : ""}`}>
-          <Link href={`/work/${project.slug}`} className="block relative aspect-[16/10] overflow-hidden rounded-sm bg-bg-soft img-hover group shadow-2xl cursor-pointer">
-            <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
-              {project.coverImage ? (
-                <img
-                  src={project.coverImage}
-                  alt={project.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-bg-card to-bg-soft" />
-              )}
-            </motion.div>
+    <article ref={ref} className="relative border-t border-border/50 group">
+      {/* Top rule — animates in on scroll */}
+      <motion.div
+        className="absolute top-0 left-0 h-px bg-accent origin-left"
+        style={{ scaleX: lineW }}
+      />
 
-            {/* Cinematic overlay vignette */}
-            <div className="absolute inset-0 bg-gradient-to-t from-bg/70 via-transparent to-transparent pointer-events-none" />
+      <div className={`flex flex-col ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"} min-h-[70vh]`}>
 
-            {/* Exhibition Badge */}
-            <div className="absolute top-6 left-6 flex items-center gap-3 text-[9px] tracking-[0.3em] uppercase text-fg font-mono">
-              <span className="px-3.5 py-1.5 rounded-full bg-bg/85 backdrop-blur-md border border-border-light text-accent">
-                Obra {number}
-              </span>
-              <span className="px-3.5 py-1.5 rounded-full bg-bg/85 backdrop-blur-md border border-border-light text-fg-muted">
-                {CATEGORY_LABELS[project.category] || project.category}
-              </span>
-            </div>
-          </Link>
-        </div>
+        {/* Image — 60% */}
+        <Link href={`/work/${project.slug}`}
+          className="relative lg:w-[60%] aspect-[4/3] lg:aspect-auto overflow-hidden cursor-pointer block">
+          <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0">
+            {project.coverImage
+              ? <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover" loading="lazy" />
+              : <div className="w-full h-full" style={{ background: `linear-gradient(135deg, #161412 0%, #0A0908 100%)` }} />
+            }
+          </motion.div>
+          {/* Overlay — darkens on hover */}
+          <div className="absolute inset-0 bg-bg/20 group-hover:bg-bg/5 transition-colors duration-700" />
 
-        {/* Storytelling Narrative (5 col) */}
-        <div className={`lg:col-span-5 ${isReverse ? "lg:order-1 lg:pr-6" : "lg:pl-6"}`}>
-          <div className="flex items-center gap-4 text-[10px] tracking-[0.35em] uppercase text-fg-dim font-mono mb-8">
-            <span className="text-fg-muted">{project.client || "Obra Autoral"}</span>
-            <span className="w-6 h-px bg-fg-dim" />
-            <span>{project.year || "2025"}</span>
+          {/* Number stamp */}
+          <div className="absolute top-6 left-6">
+            <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg/40">{num}</span>
+          </div>
+        </Link>
+
+        {/* Text — 40% */}
+        <motion.div
+          style={{ opacity: textOp, y: textY }}
+          className={`lg:w-[40%] flex flex-col justify-center px-8 md:px-12 lg:px-16 py-12 lg:py-0 ${isEven ? "" : ""}`}
+        >
+          {/* Category + client */}
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-6 h-px bg-accent/40" />
+            <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent">{cat}</span>
+            {project.client && (
+              <>
+                <div className="w-4 h-px bg-fg-dim/30" />
+                <span className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim">{project.client}</span>
+              </>
+            )}
           </div>
 
-          <h3 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[0.96] tracking-[-0.02em] text-fg mb-6">
+          {/* Title — large, editorial */}
+          <h3 className="font-display text-[clamp(2.5rem,4vw,5.5rem)] leading-[0.88] tracking-[-0.03em] text-fg mb-6">
             {project.title}
           </h3>
 
-          <p className="text-sm md:text-base text-fg-muted leading-relaxed mb-10 max-w-md font-light">
-            {project.subtitle || project.description}
-          </p>
+          {/* Subtitle */}
+          {(project.subtitle || project.description) && (
+            <p className="text-sm text-fg-muted leading-relaxed font-light max-w-sm mb-10">
+              {project.subtitle || project.description}
+            </p>
+          )}
 
-          {/* 4 Pillars: Contexto, Conceito, Direção, Resultado */}
-          <dl className="space-y-7 pt-6 border-t border-border">
-            {project.context && (
-              <div>
-                <dt className="text-[10px] tracking-[0.3em] uppercase text-accent font-mono mb-2 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                  Contexto
-                </dt>
-                <dd className="text-xs md:text-sm text-fg/90 leading-relaxed font-light">
-                  {project.context}
-                </dd>
-              </div>
-            )}
-
-            {project.challenge && (
-              <div>
-                <dt className="text-[10px] tracking-[0.3em] uppercase text-accent font-mono mb-2 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                  Desafio
-                </dt>
-                <dd className="text-xs md:text-sm text-fg/90 leading-relaxed font-light">
-                  {project.challenge}
-                </dd>
-              </div>
-            )}
-
-            {project.solution && (
-              <div>
-                <dt className="text-[10px] tracking-[0.3em] uppercase text-accent font-mono mb-2 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                  Solução
-                </dt>
-                <dd className="text-xs md:text-sm text-fg/90 leading-relaxed font-light">
-                  {project.solution}
-                </dd>
-              </div>
-            )}
-
-            {project.result && (
-              <div>
-                <dt className="text-[10px] tracking-[0.3em] uppercase text-accent font-mono mb-2 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                  Resultado
-                </dt>
-                <dd className="text-xs md:text-sm text-fg/90 leading-relaxed font-light">
-                  {project.result}
-                </dd>
-              </div>
-            )}
-          </dl>
-
-          <div className="mt-10">
-            <Link
-              href={`/work/${project.slug}`}
-              className="group inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] uppercase font-mono text-fg hover:text-accent transition-colors duration-300"
-            >
-              <span>Explorar Estudo de Caso</span>
-              <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-accent" />
-            </Link>
+          {/* Year */}
+          <div className="flex items-center gap-4 mb-10">
+            <div className="w-4 h-px bg-fg-dim/30" />
+            <span className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim">{project.year || "2025"}</span>
           </div>
-        </div>
+
+          {/* Link */}
+          <Link href={`/work/${project.slug}`}
+            className="group/link inline-flex items-center gap-4 w-fit">
+            <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-muted group-hover/link:text-fg transition-colors duration-500">
+              Ver Obra
+            </span>
+            <motion.div
+              className="w-8 h-px bg-fg-dim group-hover/link:w-16 group-hover/link:bg-accent transition-all duration-700"
+            />
+          </Link>
+        </motion.div>
       </div>
     </article>
   );
 }
 
-export default function WorkShowcaseMomento3({
-  initialProjects = [],
-}: {
-  initialProjects?: Project[];
-}) {
+// ─── Main ──────────────────────────────────────────────────────────────────────
+
+export default function WorkShowcaseMomento3({ initialProjects = [] }: { initialProjects?: Project[] }) {
   const [projects] = useState<Project[]>(initialProjects);
-  const [filter, setFilter] = useState("todos");
-  const ref = useReveal<HTMLDivElement>();
+  const [filter, setFilter] = useState("Todos");
+  const headerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: headerRef, offset: ["start end", "start start"] });
+  const headerY  = useTransform(scrollYProgress, [0, 1], [40, 0]);
+  const headerOp = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
 
-  const filteredProjects = projects.filter((project) => {
-    if (filter === "todos") return true;
-
-    // Check category mapping (supporting 'identidade' mapping to 'branding' search for consistency)
-    const cat = project.category.toLowerCase();
-    if (filter === "branding") return cat === "branding" || cat === "identidade";
-
-    return cat === filter;
+  const filtered = projects.filter(p => {
+    if (filter === "Todos") return true;
+    const c = CAT[p.category] || p.category;
+    return c === filter;
   });
 
   return (
-    <section id="momento-3" className="relative border-b border-border">
-      {/* Exposição Header */}
-      <div className="px-6 md:px-12 lg:px-16 pt-36 md:pt-48 pb-12">
-        <div ref={ref} className="max-w-[1600px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            <div className="lg:col-span-7">
-              <span className="reveal text-[10px] tracking-[0.4em] uppercase text-accent font-mono block">
-                Momento 03
-              </span>
-              <h2
-                className="reveal mt-4 font-display text-5xl md:text-7xl lg:text-8xl leading-[0.92] tracking-[-0.025em] text-fg"
-                style={{ transitionDelay: "100ms" }}
-              >
-                Obras & <br />
-                <span className="italic text-accent">Selected Work</span>
-              </h2>
-            </div>
-            <div className="lg:col-span-5 lg:flex lg:flex-col lg:items-end lg:justify-end">
-              <p
-                className="reveal text-xs md:text-sm text-fg-muted max-w-sm leading-relaxed font-light mb-6 text-left lg:text-right"
-                style={{ transitionDelay: "200ms" }}
-              >
-                Cada trabalho concebido como uma galeria. Navegue pelas obras ou filtre pela disciplina criativa correspondente abaixo.
-              </p>
+    <section id="momento-3" className="relative">
 
-              {/* Advanced Interactive Filters */}
-              <div className="reveal flex flex-wrap gap-2 justify-start lg:justify-end" style={{ transitionDelay: "250ms" }}>
-                {FILTER_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setFilter(cat.id)}
-                    className={`px-4 py-2 rounded-full text-[10px] tracking-[0.1em] uppercase font-mono transition-all duration-300 ${
-                      filter === cat.id
-                        ? "bg-accent text-bg border-accent"
-                        : "bg-transparent text-fg-muted border border-border hover:border-fg-muted hover:text-fg"
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+      {/* Section header — minimal, inline */}
+      <motion.div
+        ref={headerRef}
+        style={{ opacity: headerOp, y: headerY }}
+        className="px-6 md:px-12 lg:px-16 pt-32 pb-16 border-b border-border/30"
+      >
+        <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
+          <div>
+            <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent block mb-4">03 / Galeria</span>
+            <h2 className="font-display text-[clamp(3rem,6vw,7rem)] leading-none tracking-[-0.04em] text-fg">
+              Obras
+            </h2>
+          </div>
+          {/* Filters — horizontal, minimal */}
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            {FILTERS.map(f => (
+              <button key={f} onClick={() => setFilter(f)}
+                className={`font-mono text-[9px] tracking-[0.35em] uppercase transition-colors duration-300 relative pb-1 ${
+                  filter === f ? "text-fg" : "text-fg-dim hover:text-fg-muted"
+                }`}>
+                {f}
+                {filter === f && (
+                  <motion.div layoutId="filter-line" className="absolute bottom-0 left-0 right-0 h-px bg-accent" />
+                )}
+              </button>
+            ))}
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Exposição de Obras */}
-      <div className="px-6 md:px-12 lg:px-16 pb-20">
-        <div className="max-w-[1600px] mx-auto">
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map((project, i) => (
-                <motion.div
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <ObraExposicao project={project} index={i} />
-                </motion.div>
-              ))
-            ) : (
-              <div className="text-center py-24 border border-dashed border-border rounded-xl">
-                <p className="text-sm text-fg-muted font-light font-mono uppercase tracking-widest">Nenhuma obra encontrada nesta categoria.</p>
-              </div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+      {/* Obras list */}
+      <AnimatePresence mode="popLayout">
+        {filtered.length > 0 ? (
+          filtered.map((p, i) => (
+            <motion.div key={p.id} layout
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}>
+              <Obra project={p} index={i} />
+            </motion.div>
+          ))
+        ) : (
+          <div className="py-32 text-center border-t border-border/30">
+            <p className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-dim">
+              Nenhuma obra nesta categoria
+            </p>
+          </div>
+        )}
+      </AnimatePresence>
+
     </section>
   );
 }

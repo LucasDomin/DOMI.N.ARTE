@@ -1,124 +1,89 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useReveal } from "@/hooks/useReveal";
-import { DEFAULT_SITE_CONFIG } from "@/lib/defaults";
-import type { SiteConfig } from "@/db/schema";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function ConviteMomento5() {
   const ref = useRef<HTMLElement>(null);
-  const revealRef = useReveal<HTMLDivElement>();
-  const [config, setConfig] = useState<Partial<SiteConfig>>(DEFAULT_SITE_CONFIG);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
 
-  useEffect(() => {
-    fetch("/api/config")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data) setConfig(data);
-      })
-      .catch(() => {});
-  }, []);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-
-  const titleY = useTransform(scrollYProgress, [0, 1], [70, -70]);
-  const bgScale = useTransform(scrollYProgress, [0, 1], [0.9, 1.1]);
+  const titleY   = useTransform(scrollYProgress, [0, 1], [80, -20]);
+  const glowOp   = useTransform(scrollYProgress, [0, 0.6], [0, 0.12]);
+  const lineW    = useTransform(scrollYProgress, [0.1, 0.7], [0, 1]);
+  const contactY = useTransform(scrollYProgress, [0.3, 0.9], [40, 0]);
+  const contactO = useTransform(scrollYProgress, [0.3, 0.9], [0, 1]);
 
   return (
-    <section
-      ref={ref}
-      id="momento-5"
-      className="relative py-48 md:py-80 px-6 md:px-12 lg:px-16 overflow-hidden bg-bg border-b border-border select-none"
-    >
-      {/* Deep cinematic background presence */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none z-0"
-        style={{ scale: bgScale }}
-      >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85vw] h-[85vw] max-w-[1100px] max-h-[1100px] rounded-full bg-radial from-accent/[0.08] via-accent/[0.01] to-transparent blur-[160px]" />
+    <section ref={ref} id="momento-5"
+      className="relative min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-16 overflow-hidden border-b border-border">
+
+      {/* Ambient glow — same language as parallax */}
+      <motion.div className="absolute inset-0 pointer-events-none" style={{ opacity: glowOp }}>
+        <div className="absolute inset-0"
+          style={{ background: "radial-gradient(ellipse 70% 60% at 50% 60%, rgba(201,165,108,1) 0%, transparent 70%)" }} />
       </motion.div>
 
-      <div ref={revealRef} className="relative z-10 max-w-[1600px] mx-auto text-center">
-        <span className="reveal text-[10px] tracking-[0.4em] uppercase text-accent font-mono block">
-          Momento 05
-        </span>
-        <h2 className="reveal mt-2 font-mono text-xs tracking-[0.3em] uppercase text-fg-dim">
-          O Convite
-        </h2>
+      {/* Blueprint grid — same as parallax */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
+        style={{ backgroundImage: "linear-gradient(rgba(201,165,108,1) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,108,1) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
 
-        <motion.div style={{ y: titleY }} className="reveal mt-16 md:mt-24">
-          <p className="font-display text-[clamp(3.5rem,10vw,11rem)] leading-[0.88] tracking-[-0.03em] text-fg">
-            Vamos criar algo <br />
-            <span className="italic text-accent">impossível de ignorar.</span>
-          </p>
-        </motion.div>
+      <div className="relative z-10 max-w-[1600px] mx-auto w-full">
 
-        <p
-          className="reveal mt-16 text-base md:text-xl text-fg-muted max-w-2xl mx-auto leading-relaxed font-light"
-          style={{ transitionDelay: "150ms" }}
-        >
-          Se sua marca precisa de presença autoral, profundidade conceitual e excelência digital — vamos conversar. Aceitamos apenas parceiros com ambição criativa genuína.
-        </p>
-
-        <div
-          className="reveal mt-16 md:mt-20 flex flex-col sm:flex-row items-center justify-center gap-6"
-          style={{ transitionDelay: "250ms" }}
-        >
-          <a
-            href={`mailto:${config.contactEmail || "contato@dominiarte.com"}`}
-            className="group inline-flex items-center gap-4 px-10 py-6 rounded-full bg-fg text-bg text-xs font-bold tracking-[0.2em] uppercase hover:bg-accent transition-all duration-500 shadow-2xl"
-          >
-            <span>Iniciar Conversa Privada</span>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="transition-transform duration-500 group-hover:translate-x-1.5">
-              <path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="currentColor" strokeWidth="1.4" />
-            </svg>
-          </a>
-
-          <a
-            href="#momento-3"
-            className="inline-flex items-center gap-3 px-10 py-6 rounded-full border border-border-light text-xs font-medium tracking-[0.2em] uppercase text-fg-muted hover:text-fg hover:border-accent transition-all duration-500"
-          >
-            Revisitar Obras
-          </a>
+        {/* Section tag */}
+        <div className="mb-12 md:mb-16">
+          <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent">05 / Convite</span>
         </div>
 
-        {/* Closing details */}
-        <div
-          className="reveal mt-32 grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto pt-16 border-t border-border/80"
-          style={{ transitionDelay: "350ms" }}
-        >
-          <div>
-            <div className="text-[10px] tracking-[0.3em] uppercase text-fg-dim font-mono mb-2">
-              Contato Direto
-            </div>
-            <a
-              href={`mailto:${config.contactEmail || "contato@dominiarte.com"}`}
-              className="font-display italic text-2xl text-fg hover:text-accent transition-colors duration-300 block"
-            >
-              {config.contactEmail || "contato@dominiarte.com"}
+        {/* Main title — full viewport width */}
+        <div className="overflow-hidden mb-2">
+          <motion.h2
+            style={{ y: titleY }}
+            className="font-display text-[clamp(3.5rem,9vw,12rem)] leading-[0.84] tracking-[-0.04em] text-fg">
+            Vamos criar algo
+          </motion.h2>
+        </div>
+        <div className="overflow-hidden mb-16 md:mb-24">
+          <motion.h2
+            style={{ y: titleY }}
+            transition={{ delay: 0.05 }}
+            className="font-display italic text-[clamp(3.5rem,9vw,12rem)] leading-[0.84] tracking-[-0.04em] text-accent">
+            impossível de ignorar.
+          </motion.h2>
+        </div>
+
+        {/* Animated divider */}
+        <motion.div className="w-full h-px bg-border/50 origin-left mb-16 md:mb-24" style={{ scaleX: lineW }} />
+
+        {/* Contact block */}
+        <motion.div style={{ y: contactY, opacity: contactO }}
+          className="flex flex-col md:flex-row items-start md:items-end justify-between gap-10 md:gap-20">
+
+          <div className="space-y-3">
+            <p className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-dim mb-6">
+              Aceitamos apenas parceiros com ambição criativa genuína.
+            </p>
+            <a href="mailto:contato@dominarte.com"
+              className="group flex items-center gap-4">
+              <span className="font-display text-[clamp(1.5rem,3vw,3.5rem)] text-fg group-hover:text-accent transition-colors duration-500">
+                contato@dominarte.com
+              </span>
+              <div className="w-8 h-px bg-fg-dim group-hover:w-16 group-hover:bg-accent transition-all duration-700 flex-shrink-0" />
             </a>
           </div>
-          <div>
-            <div className="text-[10px] tracking-[0.3em] uppercase text-fg-dim font-mono mb-2">
-              Disponibilidade
+
+          <div className="flex flex-col items-start md:items-end gap-6 flex-shrink-0">
+            <div className="text-right">
+              <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-1">Disponibilidade</p>
+              <p className="font-display italic text-xl text-fg">Aberto para Q1 2026</p>
             </div>
-            <div className="font-display italic text-2xl text-fg">
-              {config.contactAvailability || "Aberto para Q1 2026"}
-            </div>
-          </div>
-          <div>
-            <div className="text-[10px] tracking-[0.3em] uppercase text-fg-dim font-mono mb-2">
-              Direção Autoral
-            </div>
-            <div className="font-display italic text-2xl text-fg">
-              {config.aboutTitle || "Estúdio DOMI.N.ARTE"}
+            <div className="text-right">
+              <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-1">Localização</p>
+              <p className="font-display italic text-xl text-fg">Brasil — Global</p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
