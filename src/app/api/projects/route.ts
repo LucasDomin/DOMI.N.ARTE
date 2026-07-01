@@ -4,96 +4,49 @@ import { projects } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { DEFAULT_PROJECTS } from "@/lib/defaults";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const includeDrafts = searchParams.get("includeDrafts") === "true";
+  if (!db) {
+    return NextResponse.json(includeDrafts ? DEFAULT_PROJECTS : DEFAULT_PROJECTS.filter((p) => !p.isDraft));
+  }
   try {
-    const { searchParams } = new URL(req.url);
-    const includeDrafts = searchParams.get("includeDrafts") === "true";
-
-    const dbProjects = includeDrafts
+    const rows = includeDrafts
       ? await db.select().from(projects).orderBy(desc(projects.createdAt))
-      : await db
-          .select()
-          .from(projects)
-          .where(eq(projects.isDraft, false))
-          .orderBy(desc(projects.createdAt));
-
-    if (dbProjects.length === 0) {
-      return NextResponse.json(
-        includeDrafts ? DEFAULT_PROJECTS : DEFAULT_PROJECTS.filter((p) => !p.isDraft)
-      );
-    }
-
-    return NextResponse.json(dbProjects);
+      : await db.select().from(projects).where(eq(projects.isDraft, false)).orderBy(desc(projects.createdAt));
+    return NextResponse.json(rows.length ? rows : DEFAULT_PROJECTS.filter((p) => !p.isDraft));
   } catch {
     return NextResponse.json(DEFAULT_PROJECTS);
   }
 }
 
 export async function POST(req: NextRequest) {
+  if (!db) return NextResponse.json({ error: "Database unavailable" }, { status: 503 });
   try {
     const body = await req.json();
-    const {
-      title,
-      subtitle,
-      category,
-      client,
-      year,
-      location,
-      duration,
-      format,
-      coverImage,
-      color,
-      description,
-      context,
-      concept,
-      direction,
-      result,
-      isDraft,
-      featured,
-      stills,
-      credits,
-      awards,
-    } = body;
-
-    const slug =
-      body.slug ||
-      title
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "");
-
-    const [project] = await db
-      .insert(projects)
-      .values({
-        slug,
-        title,
-        subtitle: subtitle || "",
-        category: category || "identidade",
-        client: client || "",
-        year: year || "",
-        location: location || "",
-        duration: duration || "",
-        format: format || "",
-        coverImage: coverImage || "",
-        color: color || "#C9A56C",
-        description: description || "",
-        context: context || "",
-        concept: concept || "",
-        direction: direction || "",
-        result: result || "",
-        isDraft: isDraft !== undefined ? isDraft : false,
-        featured: featured !== undefined ? featured : false,
-        stills: stills || [],
-        credits: credits || [],
-        awards: awards || [],
-      })
-      .returning();
-
+    const slug = body.slug || body.title.toLowerCase().normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+    const [project] = await db.insert(projects).values({
+      slug, title: body.title,
+      subtitle: body.subtitle || "", category: body.category || "identidade",
+      client: body.client || "", year: body.year || "", location: body.location || "",
+      duration: body.duration || "", format: body.format || "",
+      coverImage: body.coverImage || "", color: body.color || "#C9A56C",
+      description: body.description || "", context: body.context || "",
+      concept: body.concept || "", direction: body.direction || "",
+      challenge: body.challenge || "", solution: body.solution || "",
+      result: body.result || "", headline: body.headline || "",
+      subheadline: body.subheadline || "", mainVideo: body.mainVideo || "",
+      isDraft: body.isDraft ?? false, featured: body.featured ?? false,
+      stills: body.stills || [], credits: body.credits || [],
+      awards: body.awards || [], tags: body.tags || [],
+      seoTitle: body.seoTitle || "", seoDescription: body.seoDescription || "",
+      seoOgImage: body.seoOgImage || "",
+    }).returning();
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Failed to create project";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json({ error: String(error) }, { status: 500 });
   }
 }

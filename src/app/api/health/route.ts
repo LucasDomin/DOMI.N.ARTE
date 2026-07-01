@@ -1,19 +1,15 @@
+export const dynamic = "force-dynamic";
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
 import { seedIfEmpty } from "@/lib/seed";
 
-export const dynamic = "force-dynamic";
-
 export async function GET() {
+  if (!db) return Response.json({ ok: false, error: "DATABASE_URL not configured" }, { status: 503 });
   try {
-    // Prime the database securely
     await seedIfEmpty();
-
-    // Verify database link
     await db.execute(sql`select 1`);
-    return Response.json({ ok: true, seeded: true });
+    return Response.json({ ok: true });
   } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : "Healthcheck failed";
-    return Response.json({ ok: false, error: errorMsg }, { status: 500 });
+    return Response.json({ ok: false, error: String(error) }, { status: 500 });
   }
 }

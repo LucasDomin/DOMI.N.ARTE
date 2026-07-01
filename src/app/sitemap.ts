@@ -3,37 +3,26 @@ import { db } from "@/db";
 import { projects } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://dominarte.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://domi-n-arte.vercel.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  let publishedProjects: { slug: string; updatedAt: Date | null }[] = [];
-
+  let slugs: { slug: string; updatedAt: Date | null }[] = [];
   try {
-    publishedProjects = await db
+    if (!db) throw new Error("no db");
+    slugs = await db
       .select({ slug: projects.slug, updatedAt: projects.updatedAt })
       .from(projects)
       .where(eq(projects.isDraft, false))
       .orderBy(desc(projects.createdAt));
-  } catch {
-    // DB unavailable during build — return static routes only
-  }
+  } catch { /* build-time: no db */ }
 
-  const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: BASE_URL,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
+  return [
+    { url: BASE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
+    ...slugs.map((p) => ({
+      url: `${BASE_URL}/work/${p.slug}`,
+      lastModified: p.updatedAt ?? new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
   ];
-
-  const projectRoutes: MetadataRoute.Sitemap = publishedProjects.map((p) => ({
-    url: `${BASE_URL}/work/${p.slug}`,
-    lastModified: p.updatedAt ?? new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.8,
-  }));
-
-  return [...staticRoutes, ...projectRoutes];
 }

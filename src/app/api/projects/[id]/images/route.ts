@@ -4,179 +4,65 @@ import { projects } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { DEFAULT_PROJECTS, Still } from "@/lib/defaults";
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const dynamic = "force-dynamic";
+const noDb = () => NextResponse.json({ error: "Database unavailable" }, { status: 503 });
+
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!db) return NextResponse.json([]);
+  const { id } = await params;
   try {
-    const { id } = await params;
-    const projectId = parseInt(id);
-
-    const [project] = await db
-      .select()
-      .from(projects)
-      .where(eq(projects.id, projectId));
-
-    if (!project) {
-      const fallback = DEFAULT_PROJECTS.find((p) => p.id === projectId);
-      if (fallback) return NextResponse.json(fallback.stills);
-      return NextResponse.json([]);
-    }
-
-    const stills = (project.stills as Still[]) || [];
-    return NextResponse.json(stills);
-  } catch (error) {
-    return NextResponse.json([]);
-  }
+    const [project] = await db.select().from(projects).where(eq(projects.id, parseInt(id)));
+    return NextResponse.json((project?.stills as Still[]) || []);
+  } catch { return NextResponse.json([]); }
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!db) return noDb();
+  const { id } = await params;
   try {
-    const { id } = await params;
-    const projectId = parseInt(id);
     const body = await req.json();
-
-    const [project] = await db
-      .select()
-      .from(projects)
-      .where(eq(projects.id, projectId));
-
-    if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
-
-    const currentStills = (project.stills as Still[]) || [];
-    const newStill: Still = {
-      url: body.url,
-      type: body.type || "branding",
-      order: currentStills.length,
-    };
-
-    const updatedStills = [...currentStills, newStill];
-
-    const [updatedProject] = await db
-      .update(projects)
-      .set({ stills: updatedStills, updatedAt: new Date() })
-      .where(eq(projects.id, projectId))
-      .returning();
-
+    const [project] = await db.select().from(projects).where(eq(projects.id, parseInt(id)));
+    if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const current = (project.stills as Still[]) || [];
+    const newStill: Still = { url: body.url, type: body.type || "branding", order: current.length };
+    await db.update(projects).set({ stills: [...current, newStill], updatedAt: new Date() }).where(eq(projects.id, parseInt(id)));
     return NextResponse.json(newStill, { status: 201 });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Failed to add image";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
-  }
+  } catch (error) { return NextResponse.json({ error: String(error) }, { status: 500 }); }
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!db) return noDb();
+  const { id } = await params;
   try {
-    const { id } = await params;
-    const projectId = parseInt(id);
     const body = await req.json();
-
-    const [project] = await db
-      .select()
-      .from(projects)
-      .where(eq(projects.id, projectId));
-
-    if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
-
-    let currentStills = (project.stills as Still[]) || [];
-
+    const [project] = await db.select().from(projects).where(eq(projects.id, parseInt(id)));
+    if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const current = (project.stills as Still[]) || [];
     if (body.reorder && Array.isArray(body.images)) {
-      // Reorder using provided mappings
-      const reorderedStills: Still[] = [];
-      const imageMap = new Map<string, number>(body.images.map((img: any) => [String(img.id || img.url), Number(img.order)]));
-
-      currentStills.forEach((still) => {
-          const key = String(still.url);
-          const newOrder = imageMap.get(key);
-        if (newOrder !== undefined) {
-          reorderedStills.push({ ...still, order: newOrder });
-        } else {
-          reorderedStills.push(still);
-        }
-      });
-
-      // Sort by order ascendingly
-      reorderedStills.sort((a, b) => a.order - b.order);
-
-      const [updatedProject] = await db
-        .update(projects)
-        .set({ stills: reorderedStills, updatedAt: new Date() })
-        .where(eq(projects.id, projectId))
-        .returning();
-
-      return NextResponse.json({ success: true, stills: reorderedStills });
+      const map = new Map<string, number>(body.images.map((img: { url: string; order: number }) => [img.url, Number(img.order)]));
+      const reordered = current.map((s) => ({ ...s, order: map.get(s.url) ?? s.order })).sort((a, b) => a.order - b.order);
+      await db.update(projects).set({ stills: reordered, updatedAt: new Date() }).where(eq(projects.id, parseInt(id)));
+      return NextResponse.json({ success: true, stills: reordered });
     }
-
     if (body.url && body.type) {
-      // Update individual metadata or url
-      const updatedStills = currentStills.map((still) => {
-        if (still.url === body.url) {
-          return { ...still, type: body.type };
-        }
-        return still;
-      });
-
-      await db
-        .update(projects)
-        .set({ stills: updatedStills, updatedAt: new Date() })
-        .where(eq(projects.id, projectId));
-
+      const updated = current.map((s) => s.url === body.url ? { ...s, type: body.type } : s);
+      await db.update(projects).set({ stills: updated, updatedAt: new Date() }).where(eq(projects.id, parseInt(id)));
       return NextResponse.json({ success: true });
     }
-
-    return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Failed to update images";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
-  }
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  } catch (error) { return NextResponse.json({ error: String(error) }, { status: 500 }); }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!db) return noDb();
+  const { id } = await params;
+  const url = new URL(req.url).searchParams.get("url");
+  if (!url) return NextResponse.json({ error: "Missing url" }, { status: 400 });
   try {
-    const { id } = await params;
-    const projectId = parseInt(id);
-    const { searchParams } = new URL(req.url);
-    const urlToDelete = searchParams.get("url");
-
-    if (!urlToDelete) {
-      return NextResponse.json({ error: "Missing image url" }, { status: 400 });
-    }
-
-    const [project] = await db
-      .select()
-      .from(projects)
-      .where(eq(projects.id, projectId));
-
-    if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
-
-    const currentStills = (project.stills as Still[]) || [];
-    const filteredStills = currentStills
-      .filter((still) => still.url !== urlToDelete)
-      .map((still, index) => ({ ...still, order: index }));
-
-    await db
-      .update(projects)
-      .set({ stills: filteredStills, updatedAt: new Date() })
-      .where(eq(projects.id, projectId));
-
-    return NextResponse.json({ success: true, stills: filteredStills });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Failed to delete image";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
-  }
+    const [project] = await db.select().from(projects).where(eq(projects.id, parseInt(id)));
+    if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const filtered = ((project.stills as Still[]) || []).filter((s) => s.url !== url).map((s, i) => ({ ...s, order: i }));
+    await db.update(projects).set({ stills: filtered, updatedAt: new Date() }).where(eq(projects.id, parseInt(id)));
+    return NextResponse.json({ success: true, stills: filtered });
+  } catch (error) { return NextResponse.json({ error: String(error) }, { status: 500 }); }
 }
