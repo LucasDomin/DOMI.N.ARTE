@@ -36,42 +36,142 @@ function SceneLabel({
   );
 }
 
-// ─── Scene 1: Identity DNA ────────────────────────────────────────────────────
-// Purely geometric — no text competing. Visual stays in lower 60% of screen.
+// ─── Scene 1: Letterform construction ────────────────────────────────────────
+// Narrative: a letter "D" being designed from scratch — the way a type designer
+// works. First the grid and baseline appear, then construction lines and circles,
+// then the letter stroke itself draws in, finally measurement annotations.
+// This directly references identity creation and sets up scenes 2 (system) and 3 (platform).
 
 function Scene1({ p }: { p: MotionValue<number> }) {
-  const scale   = useTransform(p, [0, 0.35], [1.05, 0.5]);
   const opacity = useTransform(p, [0, 0.26, 0.36], [1, 1, 0]);
-  const rotate  = useTransform(p, [0, 0.35], [0, 60]);
-  const path    = useTransform(p, [0, 0.3], [1, 0]);
-  const glow    = useTransform(p, [0, 0.3], [0.12, 0]);
+  const scale   = useTransform(p, [0, 0.36], [1, 0.7]);
+
+  // Sequenced reveals — each layer appears progressively
+  const gridOp      = useTransform(p, [0, 0.06], [0, 1]);
+  const constructOp = useTransform(p, [0.04, 0.12], [0, 1]);
+  const letterPath  = useTransform(p, [0.08, 0.22], [0, 1]);
+  const annotOp     = useTransform(p, [0.18, 0.26], [0, 1]);
+  const penOp       = useTransform(p, [0.08, 0.14, 0.22, 0.26], [0, 1, 1, 0]);
+
+  // Pen cursor follows the stroke as it draws
+  const penX = useTransform(p, [0.08, 0.15, 0.22], [195, 320, 195]);
+  const penY = useTransform(p, [0.08, 0.15, 0.22], [80,  220, 360]);
 
   return (
-    <motion.div style={{ scale, rotate, opacity }}
-      className="absolute z-10 pointer-events-none flex items-center justify-center mt-16">
-      <div className="relative w-[260px] h-[260px] md:w-[380px] md:h-[380px]">
-        {/* Ambient glow behind */}
-        <motion.div
-          style={{ opacity: glow }}
-          className="absolute inset-0 rounded-full"
-        >
-          <div className="w-full h-full rounded-full" style={{ background: "radial-gradient(circle, rgba(201,165,108,0.3) 0%, transparent 70%)" }} />
-        </motion.div>
-        <svg width="100%" height="100%" viewBox="0 0 380 380" fill="none">
-          <motion.circle cx="190" cy="190" r="170" stroke="rgba(201,165,108,0.1)" strokeWidth="0.5" strokeDasharray="3 6" style={{ pathLength: path }} />
-          <motion.circle cx="190" cy="190" r="130" stroke="rgba(201,165,108,0.2)" strokeWidth="0.75" style={{ pathLength: path }} />
-          <motion.circle cx="190" cy="190" r="90"  stroke="rgba(201,165,108,0.35)" strokeWidth="1" style={{ pathLength: path }} />
-          <motion.line x1="190" y1="20" x2="190" y2="360" stroke="rgba(201,165,108,0.15)" strokeWidth="0.5" style={{ pathLength: path }} />
-          <motion.line x1="20"  y1="190" x2="360" y2="190" stroke="rgba(201,165,108,0.15)" strokeWidth="0.5" style={{ pathLength: path }} />
-          <motion.line x1="80"  y1="80" x2="300" y2="300" stroke="rgba(201,165,108,0.08)" strokeWidth="0.5" style={{ pathLength: path }} />
-          <motion.line x1="300" y1="80" x2="80"  y2="300" stroke="rgba(201,165,108,0.08)" strokeWidth="0.5" style={{ pathLength: path }} />
-          <motion.polygon points="190,70 252,108 252,188 190,224 128,188 128,108" stroke="rgba(201,165,108,0.5)" strokeWidth="1" fill="none" style={{ pathLength: path }} />
-          {/* Vertex nodes */}
-          {[[190,70],[252,108],[252,188],[190,224],[128,188],[128,108]].map(([x,y],i) => (
-            <motion.circle key={i} cx={x} cy={y} r="3" fill="rgba(201,165,108,0.4)" style={{ opacity: path }} />
-          ))}
-          <circle cx="190" cy="190" r="5" fill="rgba(201,165,108,0.9)" />
-          <circle cx="190" cy="190" r="5" fill="rgba(201,165,108,0.4)" className="animate-ping" />
+    <motion.div
+      style={{ opacity, scale }}
+      className="absolute z-10 pointer-events-none flex items-center justify-center mt-16"
+    >
+      <div className="relative w-[300px] h-[360px] md:w-[400px] md:h-[480px]">
+        <svg width="100%" height="100%" viewBox="0 0 400 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+          {/* ── Layer 1: Typographic grid ── */}
+          <motion.g style={{ opacity: gridOp }}>
+            {/* Baseline */}
+            <line x1="40" y1="380" x2="360" y2="380" stroke="rgba(201,165,108,0.35)" strokeWidth="0.75" />
+            {/* Cap height */}
+            <line x1="40" y1="80"  x2="360" y2="80"  stroke="rgba(201,165,108,0.25)" strokeWidth="0.5" strokeDasharray="6 4" />
+            {/* X-height */}
+            <line x1="40" y1="210" x2="360" y2="210" stroke="rgba(201,165,108,0.15)" strokeWidth="0.5" strokeDasharray="3 5" />
+            {/* Descender */}
+            <line x1="40" y1="420" x2="360" y2="420" stroke="rgba(201,165,108,0.1)"  strokeWidth="0.5" strokeDasharray="2 6" />
+            {/* Left margin */}
+            <line x1="80"  y1="60" x2="80"  y2="440" stroke="rgba(201,165,108,0.12)" strokeWidth="0.5" strokeDasharray="2 8" />
+            {/* Right margin hint */}
+            <line x1="320" y1="60" x2="320" y2="440" stroke="rgba(201,165,108,0.08)" strokeWidth="0.5" strokeDasharray="2 8" />
+
+            {/* Grid labels */}
+            <text x="42" y="77"  fill="rgba(201,165,108,0.4)" fontSize="8" fontFamily="monospace" letterSpacing="2">CAP</text>
+            <text x="42" y="207" fill="rgba(201,165,108,0.3)" fontSize="8" fontFamily="monospace" letterSpacing="2">X</text>
+            <text x="42" y="377" fill="rgba(201,165,108,0.5)" fontSize="8" fontFamily="monospace" letterSpacing="2">BASE</text>
+          </motion.g>
+
+          {/* ── Layer 2: Construction geometry ── */}
+          <motion.g style={{ opacity: constructOp }}>
+            {/* Main circle — bowl of the D */}
+            <circle cx="200" cy="230" r="150" stroke="rgba(201,165,108,0.12)" strokeWidth="0.75" strokeDasharray="4 4" />
+            {/* Inner circle — counter */}
+            <circle cx="215" cy="230" r="105" stroke="rgba(201,165,108,0.1)"  strokeWidth="0.5" strokeDasharray="3 5" />
+            {/* Optical center axis */}
+            <line x1="200" y1="60" x2="200" y2="400" stroke="rgba(201,165,108,0.1)" strokeWidth="0.5" />
+            {/* Angle guide — stress axis (calligraphic ~10°) */}
+            <line x1="168" y1="80" x2="195" y2="380" stroke="rgba(201,165,108,0.08)" strokeWidth="0.5" strokeDasharray="2 6" />
+
+            {/* Control point nodes */}
+            {[
+              [80, 80], [80, 380],              // stem top/bottom
+              [200, 80], [200, 380],            // top/bottom tangents
+              [340, 165], [340, 295],           // right tangents (widest)
+              [280, 94], [280, 366],            // upper/lower transitions
+            ].map(([cx, cy], i) => (
+              <g key={i}>
+                <circle cx={cx} cy={cy} r="5" fill="none" stroke="rgba(201,165,108,0.4)" strokeWidth="0.75" />
+                <circle cx={cx} cy={cy} r="1.5" fill="rgba(201,165,108,0.6)" />
+              </g>
+            ))}
+
+            {/* Control handles */}
+            <line x1="200" y1="80"  x2="280" y2="94"  stroke="rgba(201,165,108,0.2)" strokeWidth="0.5" />
+            <line x1="200" y1="380" x2="280" y2="366" stroke="rgba(201,165,108,0.2)" strokeWidth="0.5" />
+            <line x1="280" y1="94"  x2="340" y2="165" stroke="rgba(201,165,108,0.2)" strokeWidth="0.5" />
+            <line x1="280" y1="366" x2="340" y2="295" stroke="rgba(201,165,108,0.2)" strokeWidth="0.5" />
+          </motion.g>
+
+          {/* ── Layer 3: The letter D stroke — draws in ── */}
+          {/* Stem */}
+          <motion.line
+            x1="80" y1="80" x2="80" y2="380"
+            stroke="rgba(245,242,236,0.95)" strokeWidth="28"
+            strokeLinecap="round"
+            style={{ pathLength: letterPath }}
+          />
+          {/* Bowl — cubic bezier path */}
+          <motion.path
+            d="M80,80 L200,80 C310,80 360,150 360,230 C360,310 310,380 200,380 L80,380"
+            stroke="rgba(245,242,236,0.95)" strokeWidth="28"
+            strokeLinecap="round" strokeLinejoin="round"
+            fill="none"
+            style={{ pathLength: letterPath }}
+          />
+          {/* Counter fill — subtle */}
+          <motion.path
+            d="M108,108 L200,108 C288,108 332,160 332,230 C332,300 288,352 200,352 L108,352 Z"
+            fill="rgba(10,9,8,0.85)"
+            style={{ opacity: letterPath }}
+          />
+
+          {/* ── Layer 4: Measurement annotations ── */}
+          <motion.g style={{ opacity: annotOp }}>
+            {/* Stem width annotation */}
+            <line x1="66" y1="440" x2="94" y2="440" stroke="rgba(201,165,108,0.5)" strokeWidth="0.75" />
+            <line x1="66" y1="436" x2="66" y2="444" stroke="rgba(201,165,108,0.5)" strokeWidth="0.75" />
+            <line x1="94" y1="436" x2="94" y2="444" stroke="rgba(201,165,108,0.5)" strokeWidth="0.75" />
+            <text x="72" y="458" fill="rgba(201,165,108,0.6)" fontSize="7" fontFamily="monospace" letterSpacing="1">28u</text>
+
+            {/* Cap height annotation */}
+            <line x1="370" y1="80"  x2="370" y2="380" stroke="rgba(201,165,108,0.3)" strokeWidth="0.75" />
+            <line x1="366" y1="80"  x2="374" y2="80"  stroke="rgba(201,165,108,0.3)" strokeWidth="0.75" />
+            <line x1="366" y1="380" x2="374" y2="380" stroke="rgba(201,165,108,0.3)" strokeWidth="0.75" />
+            <text x="377" y="236" fill="rgba(201,165,108,0.5)" fontSize="7" fontFamily="monospace" letterSpacing="1" transform="rotate(90,377,236)">300u</text>
+
+            {/* Optical weight label */}
+            <text x="110" y="238" fill="rgba(201,165,108,0.25)" fontSize="7" fontFamily="monospace" letterSpacing="3">COUNTER</text>
+
+            {/* Glyph ID */}
+            <text x="80" y="470" fill="rgba(201,165,108,0.35)" fontSize="7" fontFamily="monospace" letterSpacing="3">D · U+0044 · REGULAR · 1000UPM</text>
+          </motion.g>
+
+          {/* ── Pen cursor — moves along the stroke as it draws ── */}
+          <motion.g style={{ opacity: penOp }} transform-origin="center">
+            <motion.g style={{ x: penX, y: penY }}>
+              {/* Pen nib shape */}
+              <path d="M0,-10 L4,0 L0,3 L-4,0 Z" fill="rgba(201,165,108,0.9)" />
+              <circle cx="0" cy="0" r="2.5" fill="none" stroke="rgba(201,165,108,0.6)" strokeWidth="0.75" />
+              {/* Ink dot */}
+              <circle cx="0" cy="3" r="1" fill="rgba(201,165,108,1)" />
+            </motion.g>
+          </motion.g>
+
         </svg>
       </div>
     </motion.div>
@@ -259,9 +359,9 @@ export default function ParallaxHero() {
         <Scene3 p={p} />
 
         {/* Labels — top zone, never competing with center visuals */}
-        <SceneLabel num="01" tag="DNA" align="left" opacity={text1}
-          title="A Gênese da Identidade"
-          body="Toda marca começa como código geométrico puro. DNA estruturado sobre contrastes e proporções absolutas." />
+        <SceneLabel num="01" tag="Construção" align="left" opacity={text1}
+          title="A Letra que Funda a Marca"
+          body="Toda identidade nasce de um gesto. Grid, eixo, peso, contraste — os mesmos princípios do type design são os pilares de uma marca inconfundível." />
         <SceneLabel num="02" tag="Sistema" align="right" opacity={text2}
           title="A Linguagem Visual"
           body="O DNA fragmenta-se em elementos de interface. Tipografia, grade, paleta e micro-interações unificados." />
