@@ -178,26 +178,50 @@ function Scene1({ p }: { p: MotionValue<number> }) {
   );
 }
 
-// ─── Scene 2: Language system fragments ───────────────────────────────────────
-// Cards orbit outward from center — high contrast, dark bg on each card
+// ─── Scene 2: System fragments — emerge from the letterform center ────────────
+// Cards start at x:0 y:0 (where the D was) and spread outward.
+// Each card starts appearing while letter is still fading — overlap creates
+// the feeling that the letter *becomes* the system, not that it disappears.
 
 function Scene2({ p }: { p: MotionValue<number> }) {
-  const opacity = useTransform(p, [0.22, 0.33, 0.62, 0.70], [0, 1, 1, 0]);
-  const aY = useTransform(p, [0.25, 0.65], [100, -100]);
-  const aX = useTransform(p, [0.25, 0.65], [-80, -220]);
-  const bY = useTransform(p, [0.25, 0.65], [-80, 80]);
-  const bX = useTransform(p, [0.25, 0.65], [80, 210]);
-  const cY = useTransform(p, [0.25, 0.65], [140, -60]);
-  const cX = useTransform(p, [0.25, 0.65], [180, 60]);
-  const dY = useTransform(p, [0.25, 0.65], [-120, 50]);
-  const dX = useTransform(p, [0.25, 0.65], [-180, -60]);
-  const rA = useTransform(p, [0.25, 0.65], [-4, 2]);
-  const rB = useTransform(p, [0.25, 0.65], [3, -3]);
+  // Staggered entry per card — overlap with Scene1 fade
+  const aOp = useTransform(p, [0.20, 0.30, 0.64, 0.70], [0, 1, 1, 0]);
+  const bOp = useTransform(p, [0.22, 0.32, 0.64, 0.70], [0, 1, 1, 0]);
+  const cOp = useTransform(p, [0.24, 0.34, 0.64, 0.70], [0, 1, 1, 0]);
+  const dOp = useTransform(p, [0.26, 0.36, 0.64, 0.70], [0, 1, 1, 0]);
+
+  // All start at center (0,0) where letter was, then spread to positions
+  const aX = useTransform(p, [0.20, 0.56], [0, -210]);
+  const aY = useTransform(p, [0.20, 0.56], [0, -105]);
+  const bX = useTransform(p, [0.22, 0.56], [0,  195]);
+  const bY = useTransform(p, [0.22, 0.56], [0, -85]);
+  const cX = useTransform(p, [0.24, 0.56], [0,  175]);
+  const cY = useTransform(p, [0.24, 0.56], [0,  115]);
+  const dX = useTransform(p, [0.26, 0.56], [0, -175]);
+  const dY = useTransform(p, [0.26, 0.56], [0,  125]);
+
+  const rA = useTransform(p, [0.20, 0.56], [0, -3]);
+  const rB = useTransform(p, [0.22, 0.56], [0,  4]);
+
+  // Origin node — pulses at center during the explosion
+  const nodeOp = useTransform(p, [0.20, 0.30, 0.56, 0.68], [0, 1, 1, 0]);
+  const nodeS  = useTransform(p, [0.20, 0.30], [0.2, 1]);
 
   return (
-    <motion.div style={{ opacity }} className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center mt-16">
-      {/* Card A — color palette */}
-      <motion.div style={{ x: aX, y: aY, rotate: rA }} className="absolute">
+    <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center mt-16">
+
+      {/* Origin — the letter's core becomes a node */}
+      <motion.div
+        style={{ opacity: nodeOp, scale: nodeS }}
+        className="absolute w-3 h-3 rounded-full bg-accent"
+      />
+      <motion.div
+        style={{ opacity: nodeOp }}
+        className="absolute w-8 h-8 rounded-full border border-accent/30"
+      />
+
+      {/* Card A — Paleta */}
+      <motion.div style={{ x: aX, y: aY, rotate: rA, opacity: aOp }} className="absolute">
         <div className="w-48 p-4 rounded-xl border border-white/10 shadow-2xl" style={{ background: "#0F0D0B" }}>
           <p className="font-mono text-[8px] tracking-[0.35em] uppercase text-accent/70 mb-3">Paleta Autoral</p>
           <div className="flex gap-1.5 mb-2">
@@ -209,8 +233,8 @@ function Scene2({ p }: { p: MotionValue<number> }) {
         </div>
       </motion.div>
 
-      {/* Card B — type */}
-      <motion.div style={{ x: bX, y: bY, rotate: rB }} className="absolute">
+      {/* Card B — Tipografia */}
+      <motion.div style={{ x: bX, y: bY, rotate: rB, opacity: bOp }} className="absolute">
         <div className="w-44 p-4 rounded-xl border border-white/10 shadow-2xl overflow-hidden" style={{ background: "#0F0D0B" }}>
           <p className="font-mono text-[8px] tracking-[0.35em] uppercase text-accent/70 mb-2">Tipografia</p>
           <p className="font-serif text-4xl text-white leading-none tracking-tight">Aa</p>
@@ -218,31 +242,28 @@ function Scene2({ p }: { p: MotionValue<number> }) {
         </div>
       </motion.div>
 
-      {/* Card C — metric */}
-      <motion.div style={{ x: cX, y: cY }} className="absolute">
+      {/* Card C — Presença */}
+      <motion.div style={{ x: cX, y: cY, opacity: cOp }} className="absolute">
         <div className="w-36 p-4 rounded-xl border border-accent/20 shadow-2xl" style={{ background: "#0F0D0B" }}>
-          <p className="font-mono text-[8px] text-white/30 uppercase tracking-widest mb-1">Conversão</p>
-          <p className="font-serif text-3xl text-accent mt-1">94%</p>
+          <p className="font-mono text-[8px] text-white/30 uppercase tracking-widest mb-1">Presença</p>
+          <p className="font-serif text-3xl text-accent mt-1">∞</p>
           <div className="mt-2 h-0.5 w-full rounded overflow-hidden" style={{ background: "#1E1B17" }}>
-            <div className="h-full rounded" style={{ width: "94%", background: "#C9A56C" }} />
+            <div className="h-full rounded w-full" style={{ background: "linear-gradient(90deg,#C9A56C,transparent)" }} />
           </div>
         </div>
       </motion.div>
 
-      {/* Card D — grid */}
-      <motion.div style={{ x: dX, y: dY }} className="absolute">
+      {/* Card D — Grid */}
+      <motion.div style={{ x: dX, y: dY, opacity: dOp }} className="absolute">
         <div className="w-40 h-28 rounded-xl border border-white/10 shadow-2xl p-3 flex flex-col gap-2" style={{ background: "#0F0D0B" }}>
+          <p className="font-mono text-[8px] tracking-[0.35em] uppercase text-accent/70 mb-0.5">Grid</p>
           <div className="flex gap-1.5 flex-1">
             {[1,2,3].map(i => <div key={i} className="flex-1 rounded-sm border border-dashed border-white/10" />)}
           </div>
-          <div className="h-1.5 w-full rounded" style={{ background: "#1E1B17" }} />
-          <div className="h-1.5 w-2/3 rounded" style={{ background: "#C9A56C33" }} />
+          <div className="h-1 w-full rounded" style={{ background: "#1E1B17" }} />
         </div>
       </motion.div>
-
-      {/* Center node */}
-      <div className="absolute w-2 h-2 rounded-full border border-accent/60 rotate-45" />
-    </motion.div>
+    </div>
   );
 }
 
