@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionTemplate } from "framer-motion";
 import type { Project } from "@/db/schema";
 import Link from "next/link";
 import WorkEmpty from "./work-empty";
@@ -115,69 +115,118 @@ function FloatingPreview({ project }: { project: Project | null }) {
   );
 }
 
-// ─── Featured obra — full cinematic, first project ────────────────────────────
+// ─── Featured obra — full viewport cinematic ──────────────────────────────────
+// Concept: cinema letterbox. Image fills 100vw × 90vh.
+// Title is massive, overlaid at the bottom like movie credits.
+// On scroll: image scales subtly, title reveals from below clip-mask.
+// No grid. No sidebar. No split. Pure image + typography.
+
 function FeaturedObra({ project }: { project: Project }) {
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 90%", "end 0%"] });
-  const imgScale = useTransform(scrollYProgress, [0, 0.3], [1.06, 1.0]);
-  const imgY     = useTransform(scrollYProgress, [0, 1], [40, -40]);
-  const textOp   = useTransform(scrollYProgress, [0, 0.15], [0, 1]);
-  const textY    = useTransform(scrollYProgress, [0, 0.15], [30, 0]);
-  const cat      = CAT[project.category] || project.category;
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+
+  // Parallax layers — each moves at different speed
+  const imgY     = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+  const imgScale = useTransform(scrollYProgress, [0, 0.3], [1.08, 1.0]);
+  const titleY   = useTransform(scrollYProgress, [0, 0.5], [0, -40]);
+
+  // Reveal: enters from bottom, stays
+  const { scrollYProgress: enterProgress } = useScroll({
+    target: ref,
+    offset: ["start 95%", "start 20%"],
+  });
+  const revealOp  = useTransform(enterProgress, [0, 0.4], [0, 1]);
+  const metaOp    = useTransform(enterProgress, [0.3, 0.7], [0, 1]);
+
+  const cat = CAT[project.category] || project.category;
 
   return (
-    <article ref={ref} className="relative border-t border-border/40 group">
-      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[85vh]">
+    <article ref={ref} className="relative overflow-hidden group">
 
-        {/* Image — left, full bleed */}
-        <Link href={`/work/${project.slug}`} data-cursor="view"
-          className="relative aspect-[4/3] lg:aspect-auto overflow-hidden block order-1">
-          <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0 will-change-transform">
-            {project.coverImage
-              ? <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover" />
-              : <div className="w-full h-full" style={{ background: "linear-gradient(135deg,#161412,#0A0908)" }} />
-            }
-          </motion.div>
-          <div className="absolute inset-0 bg-bg/20 group-hover:bg-bg/0 transition-colors duration-700" />
-
-          {/* Featured badge */}
-          <div className="absolute top-6 left-6 flex items-center gap-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-            <span className="font-mono text-[8px] tracking-[0.5em] uppercase text-fg/60">Destaque</span>
-          </div>
-        </Link>
-
-        {/* Text — right */}
-        <motion.div style={{ opacity: textOp, y: textY }}
-          className="flex flex-col justify-center px-8 md:px-12 lg:px-16 py-16 lg:py-0 order-2 bg-bg-soft/20">
-          <div className="flex items-center gap-4 mb-10">
-            <span className="w-5 h-px bg-accent/50" />
-            <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent">{cat}</span>
-            {project.client && <>
-              <span className="w-3 h-px bg-fg-dim/20" />
-              <span className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim">{project.client}</span>
-            </>}
-          </div>
-
-          <h3 className="font-display text-[clamp(3rem,5vw,7rem)] leading-[0.88] tracking-[-0.04em] text-fg mb-6">
-            {project.title}
-          </h3>
-
-          {(project.subtitle || project.description) && (
-            <p className="text-sm text-fg-muted leading-relaxed font-light max-w-sm mb-12">
-              {project.subtitle || project.description}
-            </p>
+      {/* ── Full-viewport image ── */}
+      <Link
+        href={`/work/${project.slug}`}
+        data-cursor="view"
+        className="block relative w-full overflow-hidden"
+        style={{ height: "90vh" }}
+      >
+        {/* Parallax image */}
+        <motion.div
+          style={{ y: imgY, scale: imgScale }}
+          className="absolute inset-[-10%] will-change-transform"
+        >
+          {project.coverImage ? (
+            <img
+              src={project.coverImage}
+              alt={project.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div
+              className="w-full h-full"
+              style={{ background: "linear-gradient(160deg,#1A1612 0%,#0A0908 100%)" }}
+            />
           )}
-
-          <Link href={`/work/${project.slug}`}
-            className="group/lnk inline-flex items-center gap-4 w-fit">
-            <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-dim group-hover/lnk:text-fg transition-colors duration-500">
-              Ver Obra
-            </span>
-            <span className="w-8 h-px bg-fg-dim group-hover/lnk:w-16 group-hover/lnk:bg-accent transition-all duration-700" />
-          </Link>
         </motion.div>
-      </div>
+
+        {/* Cinema letterbox bars — top and bottom */}
+        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-bg to-transparent z-10 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-[45%] z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to top, rgba(10,9,8,0.97) 0%, rgba(10,9,8,0.7) 40%, transparent 100%)" }}
+        />
+
+        {/* ── Overlaid content ── */}
+        <motion.div style={{ opacity: revealOp }}
+          className="absolute inset-0 z-20 flex flex-col justify-end px-6 md:px-12 lg:px-16 pb-12 md:pb-16">
+
+          {/* Meta strip — top left */}
+          <motion.div style={{ opacity: metaOp }}
+            className="absolute top-8 left-6 md:left-12 lg:left-16 flex items-center gap-4">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg/60">{cat}</span>
+            {project.client && (
+              <span className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg/40">
+                — {project.client}
+              </span>
+            )}
+          </motion.div>
+
+          {/* Index — top right */}
+          <motion.span style={{ opacity: metaOp }}
+            className="absolute top-8 right-6 md:right-12 lg:right-16 font-mono text-[9px] tracking-[0.5em] uppercase text-fg/30">
+            01
+          </motion.span>
+
+          {/* ── Massive title — slides up from below ── */}
+          <div className="overflow-hidden mb-6">
+            <motion.h3
+              style={{ y: titleY }}
+              className="font-display text-[clamp(3.5rem,8vw,11rem)] leading-[0.84] tracking-[-0.045em] text-fg"
+            >
+              {project.title}
+            </motion.h3>
+          </div>
+
+          {/* Bottom strip: subtitle + CTA */}
+          <motion.div style={{ opacity: metaOp }}
+            className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
+            {(project.subtitle || project.description) && (
+              <p className="text-sm text-fg/50 font-light max-w-md leading-relaxed">
+                {project.subtitle || project.description}
+              </p>
+            )}
+            <div className="flex items-center gap-4 flex-shrink-0">
+              <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg/40">
+                {project.year || "2025"}
+              </span>
+              <span className="w-px h-4 bg-fg/20" />
+              <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent group-hover:text-fg transition-colors duration-500">
+                Ver Obra →
+              </span>
+            </div>
+          </motion.div>
+        </motion.div>
+      </Link>
     </article>
   );
 }
