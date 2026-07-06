@@ -17,7 +17,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch { /* build-time: no db */ }
 
   return [
-    { url: BASE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
+    { url: BASE_URL,           lastModified: new Date(), changeFrequency: "weekly",  priority: 1   },
+    { url: `${BASE_URL}/sobre`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     ...slugs.map((p) => ({
       url: `${BASE_URL}/work/${p.slug}`,
       lastModified: p.updatedAt ?? new Date(),

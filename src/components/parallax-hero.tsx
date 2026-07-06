@@ -362,8 +362,8 @@ export default function ParallaxHero() {
   const scrollHint = useTransform(p, [0, 0.06], [1, 0]);
 
   return (
-    <div ref={ref} className="relative h-[500vh] bg-bg">
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+    <div ref={ref} className="relative h-[500vh] bg-bg" aria-label="Introdução animada — processo de criação de identidade visual">
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center" role="presentation" aria-hidden="true">
 
         {/* Ambient glow */}
         <motion.div className="absolute inset-0 pointer-events-none" style={{ opacity: glowOp }}>

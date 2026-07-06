@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import type { Project } from "@/db/schema";
 import Link from "next/link";
 import { SplitLine } from "./split-text";
+import WorkEmpty from "./work-empty";
 
 const CAT: Record<string, string> = {
   identidade: "Branding", branding: "Branding", motion: "Motion",
@@ -156,11 +157,13 @@ export default function WorkShowcaseMomento3({ initialProjects = [] }: { initial
               <Obra project={p} index={i} />
             </motion.div>
           ))
-          : (
-            <div className="py-40 text-center border-t border-border/30">
-              <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-dim">Nenhuma obra nesta categoria</span>
-            </div>
-          )
+          : filter !== "Todos"
+            ? (
+              <div className="py-40 text-center border-t border-border/30">
+                <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-dim">Nenhuma obra nesta categoria</span>
+              </div>
+            )
+            : <WorkEmpty />
         }
       </AnimatePresence>
     </section>

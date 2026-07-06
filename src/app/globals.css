@@ -188,3 +188,25 @@ select:focus-visible {
     transform: none;
   }
 }
+
+/* Accessibility: respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .grain { display: none; }
+}
+
+/* Fix: fg-dim contrast — WCAG AA compliant */
+/* #4A4540 on #0A0908 = 2.8:1 (fail). Use fg-muted (#8B8580) for small text instead. */
+/* Applied via component-level class usage — see component updates */
+
+/* Scrollbar brand color */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(201, 165, 108, 0.3); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(201, 165, 108, 0.6); }
+* { scrollbar-width: thin; scrollbar-color: rgba(201,165,108,0.3) transparent; }

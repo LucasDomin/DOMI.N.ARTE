@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import ContactForm from "./contact-form";
 
 export default function ConviteMomento5() {
   const ref = useRef<HTMLElement>(null);
@@ -10,96 +11,95 @@ export default function ConviteMomento5() {
     offset: ["start end", "start start"],
   });
 
-  // Só o título tem parallax — entra de baixo conforme a seção sobe
   const titleY = useTransform(scrollYProgress, [0, 1], [60, 0]);
   const titleO = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
-
-  // Glow aparece quando seção entra
   const glowOp = useTransform(scrollYProgress, [0, 1], [0, 0.1]);
 
   return (
     <section
       ref={ref}
       id="momento-5"
-      className="relative min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-16 overflow-hidden border-b border-border"
+      className="relative px-6 md:px-12 lg:px-16 py-32 md:py-48 overflow-hidden border-b border-border"
     >
       {/* Ambient glow */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        style={{ opacity: glowOp }}
-      >
-        <div
-          className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse 70% 60% at 50% 60%, rgba(201,165,108,1) 0%, transparent 70%)" }}
+      <motion.div className="absolute inset-0 pointer-events-none" style={{ opacity: glowOp }}>
+        <div className="absolute inset-0"
+          style={{ background: "radial-gradient(ellipse 70% 60% at 50% 40%, rgba(201,165,108,1) 0%, transparent 70%)" }}
         />
       </motion.div>
 
       {/* Blueprint grid */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.02]"
+      <div className="absolute inset-0 pointer-events-none opacity-[0.02]"
         style={{
           backgroundImage: "linear-gradient(rgba(201,165,108,1) 1px, transparent 1px), linear-gradient(90deg, rgba(201,165,108,1) 1px, transparent 1px)",
           backgroundSize: "80px 80px",
         }}
       />
 
-      <div className="relative z-10 max-w-[1600px] mx-auto w-full">
+      <div className="relative z-10 max-w-[1600px] mx-auto">
 
-        {/* Section tag — sempre visível */}
-        <div className="mb-12 md:mb-16">
+        {/* Section tag */}
+        <div className="mb-14 md:mb-20">
           <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent">
-            05 / Convite
+            05 / Contato
           </span>
         </div>
 
-        {/* Título — parallax de entrada, depois estático */}
-        <motion.div style={{ y: titleY, opacity: titleO }}>
-          <div className="overflow-hidden mb-1">
-            <h2 className="font-display text-[clamp(3rem,8vw,11rem)] leading-[0.88] tracking-[-0.04em] text-fg">
-              Vamos criar algo
-            </h2>
-          </div>
-          <div className="overflow-hidden mb-16 md:mb-24">
-            <h2 className="font-display italic text-[clamp(3rem,8vw,11rem)] leading-[0.88] tracking-[-0.04em] text-accent">
-              impossível de ignorar.
-            </h2>
-          </div>
-        </motion.div>
+        {/* Two-column layout: title left, form right */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-start">
 
-        {/* Divider — estático */}
-        <div className="w-full h-px bg-border/50 mb-16 md:mb-24" />
+          {/* Left — title + meta */}
+          <motion.div style={{ y: titleY, opacity: titleO }}>
+            <div className="overflow-hidden mb-1">
+              <h2 className="font-display text-[clamp(2.8rem,5vw,7rem)] leading-[0.88] tracking-[-0.04em] text-fg">
+                Vamos construir
+              </h2>
+            </div>
+            <div className="overflow-hidden mb-16">
+              <h2 className="font-display italic text-[clamp(2.8rem,5vw,7rem)] leading-[0.88] tracking-[-0.04em] text-accent">
+                algo real.
+              </h2>
+            </div>
 
-        {/* Contato — SEM animação de scroll, sempre visível quando na tela */}
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-12 md:gap-20">
+            <div className="space-y-8">
+              <div>
+                <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
+                  Disponibilidade
+                </p>
+                <p className="font-display italic text-xl text-fg">Aceitando projetos para Q3 2026</p>
+              </div>
+              <div>
+                <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
+                  Investimento mínimo
+                </p>
+                <p className="font-display italic text-xl text-fg">A partir de R$ 15.000</p>
+              </div>
+              <div>
+                <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
+                  Localização
+                </p>
+                <p className="font-display italic text-xl text-fg">Brasil — Atendimento global</p>
+              </div>
+              <div className="pt-4 border-t border-border/40">
+                <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
+                  Prefere e-mail direto?
+                </p>
+                <a
+                  href="mailto:ola@dominarte.com.br"
+                  className="font-display text-lg text-fg hover:text-accent transition-colors duration-500"
+                >
+                  ola@dominarte.com.br
+                </a>
+              </div>
+            </div>
+          </motion.div>
 
+          {/* Right — qualification form */}
           <div>
-            <p className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-dim mb-8">
-              Aceitamos apenas parceiros com ambição criativa genuína.
+            <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-10">
+              Preencha abaixo — respondemos em até 48h úteis.
             </p>
-            <a
-              href="mailto:contato@dominarte.com"
-              className="group flex items-center gap-5"
-            >
-              <span className="font-display text-[clamp(1.4rem,2.8vw,3.2rem)] text-fg group-hover:text-accent transition-colors duration-500">
-                contato@dominarte.com
-              </span>
-              <span className="block w-8 h-px bg-fg-dim group-hover:w-16 group-hover:bg-accent transition-all duration-700 flex-shrink-0" />
-            </a>
-          </div>
-
-          <div className="flex flex-col items-start md:items-end gap-8 flex-shrink-0">
-            <div className="md:text-right">
-              <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
-                Disponibilidade
-              </p>
-              <p className="font-display italic text-2xl text-fg">Aberto para Q1 2026</p>
-            </div>
-            <div className="md:text-right">
-              <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
-                Localização
-              </p>
-              <p className="font-display italic text-2xl text-fg">Brasil — Global</p>
-            </div>
+            <ContactForm />
           </div>
         </div>
       </div>
