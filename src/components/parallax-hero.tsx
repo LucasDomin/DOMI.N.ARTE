@@ -43,19 +43,18 @@ function SceneLabel({
 // This directly references identity creation and sets up scenes 2 (system) and 3 (platform).
 
 function Scene1({ p }: { p: MotionValue<number> }) {
-  const opacity = useTransform(p, [0, 0.26, 0.36], [1, 1, 0]);
-  const scale   = useTransform(p, [0, 0.36], [1, 0.7]);
+  // Scene1: 0→0.46. Letter draws 0.08→0.20, then HOLDS until 0.38, then exits.
+  const opacity = useTransform(p, [0, 0.38, 0.46], [1, 1, 0]);
+  const scale   = useTransform(p, [0, 0.46], [1, 0.65]);
 
-  // Sequenced reveals — each layer appears progressively
   const gridOp      = useTransform(p, [0, 0.06], [0, 1]);
   const constructOp = useTransform(p, [0.04, 0.12], [0, 1]);
-  const letterPath  = useTransform(p, [0.08, 0.22], [0, 1]);
-  const annotOp     = useTransform(p, [0.18, 0.26], [0, 1]);
-  const penOp       = useTransform(p, [0.08, 0.14, 0.22, 0.26], [0, 1, 1, 0]);
+  const letterPath  = useTransform(p, [0.08, 0.20], [0, 1]); // draws in, then holds
+  const annotOp     = useTransform(p, [0.18, 0.28], [0, 1]); // annotations appear after letter complete
+  const penOp       = useTransform(p, [0.08, 0.14, 0.20, 0.24], [0, 1, 1, 0]);
 
-  // Pen cursor follows the stroke as it draws
-  const penX = useTransform(p, [0.08, 0.15, 0.22], [195, 320, 195]);
-  const penY = useTransform(p, [0.08, 0.15, 0.22], [80,  220, 360]);
+  const penX = useTransform(p, [0.08, 0.15, 0.20], [195, 320, 195]);
+  const penY = useTransform(p, [0.08, 0.15, 0.20], [80,  220, 360]);
 
   return (
     <motion.div
@@ -185,27 +184,26 @@ function Scene1({ p }: { p: MotionValue<number> }) {
 
 function Scene2({ p }: { p: MotionValue<number> }) {
   // Staggered entry per card — overlap with Scene1 fade
-  const aOp = useTransform(p, [0.20, 0.30, 0.64, 0.70], [0, 1, 1, 0]);
-  const bOp = useTransform(p, [0.22, 0.32, 0.64, 0.70], [0, 1, 1, 0]);
-  const cOp = useTransform(p, [0.24, 0.34, 0.64, 0.70], [0, 1, 1, 0]);
-  const dOp = useTransform(p, [0.26, 0.36, 0.64, 0.70], [0, 1, 1, 0]);
+  // Scene2: 0.42→0.70. Cards emerge from letter center and HOLD in position.
+  const aOp = useTransform(p, [0.42, 0.50, 0.66, 0.72], [0, 1, 1, 0]);
+  const bOp = useTransform(p, [0.44, 0.52, 0.66, 0.72], [0, 1, 1, 0]);
+  const cOp = useTransform(p, [0.46, 0.54, 0.66, 0.72], [0, 1, 1, 0]);
+  const dOp = useTransform(p, [0.48, 0.56, 0.66, 0.72], [0, 1, 1, 0]);
 
-  // All start at center (0,0) where letter was, then spread to positions
-  const aX = useTransform(p, [0.20, 0.56], [0, -210]);
-  const aY = useTransform(p, [0.20, 0.56], [0, -105]);
-  const bX = useTransform(p, [0.22, 0.56], [0,  195]);
-  const bY = useTransform(p, [0.22, 0.56], [0, -85]);
-  const cX = useTransform(p, [0.24, 0.56], [0,  175]);
-  const cY = useTransform(p, [0.24, 0.56], [0,  115]);
-  const dX = useTransform(p, [0.26, 0.56], [0, -175]);
-  const dY = useTransform(p, [0.26, 0.56], [0,  125]);
+  const aX = useTransform(p, [0.42, 0.56], [0, -210]);
+  const aY = useTransform(p, [0.42, 0.56], [0, -105]);
+  const bX = useTransform(p, [0.44, 0.56], [0,  195]);
+  const bY = useTransform(p, [0.44, 0.56], [0, -85]);
+  const cX = useTransform(p, [0.46, 0.56], [0,  175]);
+  const cY = useTransform(p, [0.46, 0.56], [0,  115]);
+  const dX = useTransform(p, [0.48, 0.56], [0, -175]);
+  const dY = useTransform(p, [0.48, 0.56], [0,  125]);
 
-  const rA = useTransform(p, [0.20, 0.56], [0, -3]);
-  const rB = useTransform(p, [0.22, 0.56], [0,  4]);
+  const rA = useTransform(p, [0.42, 0.56], [0, -3]);
+  const rB = useTransform(p, [0.44, 0.56], [0,  4]);
 
-  // Origin node — pulses at center during the explosion
-  const nodeOp = useTransform(p, [0.20, 0.30, 0.56, 0.68], [0, 1, 1, 0]);
-  const nodeS  = useTransform(p, [0.20, 0.30], [0.2, 1]);
+  const nodeOp = useTransform(p, [0.42, 0.50, 0.58, 0.68], [0, 1, 1, 0]);
+  const nodeS  = useTransform(p, [0.42, 0.50], [0.2, 1]);
 
   return (
     <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center mt-16">
@@ -270,9 +268,10 @@ function Scene2({ p }: { p: MotionValue<number> }) {
 // ─── Scene 3: Editorial platform reveal ──────────────────────────────────────
 
 function Scene3({ p }: { p: MotionValue<number> }) {
-  const opacity = useTransform(p, [0.60, 0.74, 1], [0, 1, 1]);
-  const y       = useTransform(p, [0.60, 0.80], [80, 0]);
-  const rotX    = useTransform(p, [0.60, 0.85], [22, 0]);
+  // Scene3: 0.70→1.0. Full hold — platform stays visible to the end.
+  const opacity = useTransform(p, [0.70, 0.82, 1], [0, 1, 1]);
+  const y       = useTransform(p, [0.70, 0.84], [80, 0]);
+  const rotX    = useTransform(p, [0.70, 0.86], [22, 0]);
 
   return (
     <motion.div style={{ opacity, y, rotateX: rotX, perspective: "1200px" }}
@@ -330,9 +329,9 @@ function Scene3({ p }: { p: MotionValue<number> }) {
 // ─── Progress bar — horizontal at bottom ─────────────────────────────────────
 
 function ProgressBar({ p }: { p: MotionValue<number> }) {
-  const s1 = useTransform(p, (v) => v < 0.33 ? 1 : 0.25);
-  const s2 = useTransform(p, (v) => v >= 0.33 && v < 0.66 ? 1 : 0.25);
-  const s3 = useTransform(p, (v) => v >= 0.66 ? 1 : 0.25);
+  const s1 = useTransform(p, (v) => v < 0.45 ? 1 : 0.25);
+  const s2 = useTransform(p, (v) => v >= 0.45 && v < 0.72 ? 1 : 0.25);
+  const s3 = useTransform(p, (v) => v >= 0.72 ? 1 : 0.25);
   const labels = [["01","DNA"], ["02","Sistema"], ["03","Plataforma"]];
   const opacities = [s1, s2, s3];
 
@@ -355,14 +354,15 @@ export default function ParallaxHero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const p = useSpring(scrollYProgress, { stiffness: 80, damping: 22, mass: 0.6 });
 
-  const text1 = useTransform(p, [0, 0.18, 0.28], [1, 1, 0]);
-  const text2 = useTransform(p, [0.28, 0.38, 0.58, 0.66], [0, 1, 1, 0]);
-  const text3 = useTransform(p, [0.66, 0.76, 1], [0, 1, 1]);
+  // Labels match scene timings — each visible while its scene is active
+  const text1 = useTransform(p, [0, 0.20, 0.38, 0.46], [1, 1, 1, 0]);
+  const text2 = useTransform(p, [0.44, 0.52, 0.64, 0.72], [0, 1, 1, 0]);
+  const text3 = useTransform(p, [0.72, 0.82, 1], [0, 1, 1]);
   const glowOp = useTransform(p, [0, 0.5, 1], [0.06, 0.03, 0.14]);
   const scrollHint = useTransform(p, [0, 0.06], [1, 0]);
 
   return (
-    <div ref={ref} className="relative h-[500vh] bg-bg" aria-label="Introdução animada — processo de criação de identidade visual">
+    <div ref={ref} className="relative h-[700vh] bg-bg" aria-label="Introdução animada — processo de criação de identidade visual">
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center" role="presentation" aria-hidden="true">
 
         {/* Ambient glow */}
