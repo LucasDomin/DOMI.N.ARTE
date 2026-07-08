@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth";
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/projects/:path*", "/api/config", "/api/upload"],
+  matcher: ["/admin/:path*", "/api/projects/:path*", "/api/config", "/api/upload", "/api/clients/:path*"],
 };
 
 const WRITE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);

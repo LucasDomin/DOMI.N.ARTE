@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import ProjectForm from "@/components/admin/project-form";
 import ImageManager from "@/components/admin/image-manager";
+import ClientsManager from "@/components/admin/clients-manager";
 import type { Project, SiteConfig } from "@/db/schema";
 import {
   Boxes,
@@ -31,7 +32,7 @@ export default function AdminPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [siteCfg, setSiteCfg] = useState<Partial<SiteConfig>>({});
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"obras" | "settings">("obras");
+  const [activeTab, setActiveTab] = useState<"obras" | "clients" | "settings">("obras");
 
   // Form State
   const [formOpen, setFormOpen] = useState(false);
@@ -308,6 +309,16 @@ export default function AdminPage() {
             Gestão de Obras (Exposições)
           </button>
           <button
+            onClick={() => setActiveTab("clients")}
+            className={`pb-4 px-1 text-xs tracking-[0.2em] uppercase font-mono font-medium transition-all ml-10 ${
+              activeTab === "clients"
+                ? "text-accent border-b-2 border-accent"
+                : "text-fg-dim hover:text-fg"
+            }`}
+          >
+            Barra de Clientes
+          </button>
+          <button
             onClick={() => setActiveTab("settings")}
             className={`pb-4 px-1 text-xs tracking-[0.2em] uppercase font-mono font-medium transition-all ml-10 ${
               activeTab === "settings"
@@ -454,6 +465,16 @@ export default function AdminPage() {
                     </tbody>
                   </table>
                 </div>
+              </motion.div>
+            ) : activeTab === "clients" ? (
+              <motion.div
+                key="clients"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.4 }}
+              >
+                <ClientsManager />
               </motion.div>
             ) : (
               <motion.div

@@ -12,6 +12,7 @@ import ConviteMomento5 from "@/components/cta-final";
 import FooterMomento from "@/components/footer";
 import CustomCursor from "@/components/cursor";
 import SectionTransition from "@/components/section-transition";
+import ClientsMarquee from "@/components/clients-marquee";
 import type { Project } from "@/db/schema";
 
 export default function HomePageClient({ initialProjects }: { initialProjects: Project[] }) {
@@ -40,6 +41,9 @@ export default function HomePageClient({ initialProjects }: { initialProjects: P
 
           {/* 02 — Manifesto */}
           <ManifestoMomento2 />
+
+          {/* Clients marquee — social proof */}
+          <ClientsMarquee />
 
           {/* Divider */}
           <SectionTransition number="03" label="Galeria de Obras" />
