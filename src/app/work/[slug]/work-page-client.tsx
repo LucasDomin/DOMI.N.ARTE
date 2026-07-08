@@ -165,21 +165,36 @@ function NarrativeSection({ project }: { project: Project }) {
                 <p className="font-display text-3xl md:text-4xl text-fg leading-relaxed">{project.context}</p>
               </div>
             )}
+
+            {/* Concept — the creative idea, given the most visual weight */}
+            {project.concept && (
+              <div className="relative pt-10 pb-2">
+                <div className="absolute -left-6 lg:-left-10 top-10 bottom-2 w-px bg-gradient-to-b from-accent via-accent/30 to-transparent" />
+                <h4 className="text-[11px] tracking-[0.35em] uppercase text-accent font-mono mb-5 flex items-center gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                  A Ideia
+                </h4>
+                <p className="font-display italic text-2xl md:text-3xl lg:text-[2.4rem] text-fg leading-[1.35]">
+                  {project.concept}
+                </p>
+              </div>
+            )}
+
             {project.challenge && (
               <div className="space-y-4 pt-8 border-t border-border">
-                <h4 className="text-[11px] tracking-[0.35em] uppercase text-accent font-mono">02 · O Desafio</h4>
+                <h4 className="text-[11px] tracking-[0.35em] uppercase text-accent font-mono">O Desafio</h4>
                 <p className="text-base md:text-lg text-fg-muted leading-relaxed font-light">{project.challenge}</p>
               </div>
             )}
             {project.solution && (
               <div className="space-y-4 pt-8 border-t border-border">
-                <h4 className="text-[11px] tracking-[0.35em] uppercase text-accent font-mono">03 · A Resolução</h4>
+                <h4 className="text-[11px] tracking-[0.35em] uppercase text-accent font-mono">A Resolução</h4>
                 <p className="text-base md:text-lg text-fg-muted leading-relaxed font-light">{project.solution}</p>
               </div>
             )}
             {project.result && (
               <div className="space-y-4 pt-8 border-t border-border">
-                <h4 className="text-[11px] tracking-[0.35em] uppercase text-accent font-mono">04 · Resultado</h4>
+                <h4 className="text-[11px] tracking-[0.35em] uppercase text-accent font-mono">Resultado</h4>
                 <p className="font-display text-2xl md:text-3xl text-fg italic leading-relaxed">{project.result}</p>
               </div>
             )}
@@ -190,40 +205,95 @@ function NarrativeSection({ project }: { project: Project }) {
   );
 }
 
+// ─── Categorized image gallery ─────────────────────────────────────────────────
+// Groups project stills into named sections: Identidade, Logo, Site, Sistema.
+// Each section only renders if it has images. Order follows a fixed narrative
+// sequence — from abstract identity to concrete applications.
+
+type Still = { url: string; type: string; order: number };
+
+const TYPE_CONFIG: Record<string, { label: string; num: string; hint: string }> = {
+  identidade: { label: "Identidade Visual", num: "01", hint: "Paleta, texturas e direção visual" },
+  logo:       { label: "Construção do Logo", num: "02", hint: "Processo e variações do logotipo" },
+  site:       { label: "Experiência Digital", num: "03", hint: "Interfaces e telas do produto" },
+  sistema:    { label: "Sistema de Marca",    num: "04", hint: "Aplicações e elementos do sistema" },
+  // legacy fallbacks from earlier data model
+  branding:   { label: "Identidade Visual",   num: "01", hint: "Paleta, texturas e direção visual" },
+  component:  { label: "Experiência Digital", num: "03", hint: "Interfaces e telas do produto" },
+};
+
+const TYPE_ORDER = ["identidade", "branding", "logo", "site", "component", "sistema"];
+
+function StillsSection({ type, items }: { type: string; items: Still[] }) {
+  const config = TYPE_CONFIG[type] ?? { label: type, num: "•", hint: "" };
+  const sorted = [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  return (
+    <div className="mb-24 md:mb-32 last:mb-0">
+      {/* Section header */}
+      <div className="flex items-baseline gap-5 mb-10 md:mb-12">
+        <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent">{config.num}</span>
+        <div className="w-8 h-px bg-accent/40" />
+        <h3 className="font-display text-2xl md:text-3xl text-fg tracking-tight">{config.label}</h3>
+        {config.hint && (
+          <span className="hidden md:inline font-mono text-[9px] tracking-[0.2em] uppercase text-fg-dim ml-auto">
+            {config.hint}
+          </span>
+        )}
+      </div>
+
+      {/* Images — first is large, rest form a grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        {sorted.map((still, i) => (
+          <div
+            key={i}
+            className={`relative overflow-hidden rounded bg-bg-soft border border-border group shadow-lg ${
+              i === 0 && sorted.length > 1 ? "md:col-span-2 aspect-[21/9]" : "aspect-[4/3]"
+            }`}
+          >
+            <img
+              src={still.url}
+              alt={`${config.label} — imagem ${i + 1}`}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-bg/40 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function StillsGallery({ project }: { project: Project }) {
-  const stillsList = (project.stills as { url: string; type: string; order: number }[]) || [];
+  const stillsList = (project.stills as Still[]) || [];
   if (stillsList.length === 0) return null;
 
-  const sortedStills = [...stillsList].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  // Group by type, preserving a fixed narrative order
+  const grouped = new Map<string, Still[]>();
+  for (const still of stillsList) {
+    const key = still.type || "sistema";
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key)!.push(still);
+  }
+
+  const orderedTypes = TYPE_ORDER.filter((t) => grouped.has(t));
+  // Include any unrecognized types at the end
+  for (const t of grouped.keys()) {
+    if (!orderedTypes.includes(t)) orderedTypes.push(t);
+  }
 
   return (
     <section className="relative py-24 md:py-36 px-6 md:px-12 lg:px-16 border-t border-border">
       <div className="max-w-[1600px] mx-auto">
-        <div className="mb-16">
-          <span className="text-[10px] tracking-[0.4em] uppercase text-accent font-mono">Exposição de Ativos</span>
-          <h2 className="font-display text-4xl md:text-5xl text-fg mt-2">Ativos de Marca & Interfaces</h2>
+        <div className="mb-16 md:mb-20">
+          <span className="text-[10px] tracking-[0.4em] uppercase text-accent font-mono">Galeria do Projeto</span>
+          <h2 className="font-display text-4xl md:text-5xl text-fg mt-2">Explorando cada camada</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {sortedStills.map((still, index) => (
-            <div
-              key={index}
-              className={`relative overflow-hidden rounded bg-bg-soft border border-border group shadow-lg ${
-                index % 3 === 0 ? "md:col-span-2 aspect-[21/9]" : "aspect-[4/3]"
-              }`}
-            >
-              <img
-                src={still.url}
-                alt=""
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-bg/60 to-transparent pointer-events-none" />
-              <span className="absolute bottom-6 left-6 text-[10px] tracking-[0.25em] uppercase text-fg/80 font-mono bg-bg/85 px-3 py-1.5 rounded-full border border-border-light">
-                {still.type === "branding" ? "Identidade" : still.type === "component" ? "UI" : "Produto"}
-              </span>
-            </div>
-          ))}
-        </div>
+
+        {orderedTypes.map((type) => (
+          <StillsSection key={type} type={type} items={grouped.get(type)!} />
+        ))}
       </div>
     </section>
   );
