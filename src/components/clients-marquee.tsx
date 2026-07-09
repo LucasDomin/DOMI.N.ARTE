@@ -12,15 +12,15 @@ function LogoItem({ client }: { client: Client }) {
     <img
       src={client.logoUrl}
       alt={client.name}
-      className="h-6 md:h-8 w-auto object-contain grayscale opacity-40 group-hover:opacity-90 group-hover:grayscale-0 transition-all duration-500"
+      className="h-10 md:h-14 w-auto object-contain grayscale opacity-50 group-hover:opacity-95 group-hover:grayscale-0 transition-all duration-500"
     />
   ) : (
-    <span className="font-display text-lg md:text-xl text-fg-dim opacity-40 group-hover:opacity-90 group-hover:text-fg transition-all duration-500 whitespace-nowrap">
+    <span className="font-display text-2xl md:text-3xl text-fg-dim opacity-50 group-hover:opacity-95 group-hover:text-fg transition-all duration-500 whitespace-nowrap">
       {client.name}
     </span>
   );
 
-  const className = "group flex items-center justify-center px-8 md:px-12 flex-shrink-0";
+  const className = "group flex items-center justify-center px-10 md:px-16 flex-shrink-0";
 
   if (client.link) {
     return (
@@ -47,7 +47,7 @@ export default function ClientsMarquee() {
   const duration = Math.max(18, clients.length * 3.5);
 
   return (
-    <section className="relative py-16 md:py-20 border-y border-border/30 overflow-hidden bg-bg-soft/10">
+    <section className="relative py-20 md:py-28 border-y border-border/30 overflow-hidden bg-bg-soft/10">
       <style>{`
         @keyframes marquee-scroll {
           from { transform: translateX(0); }

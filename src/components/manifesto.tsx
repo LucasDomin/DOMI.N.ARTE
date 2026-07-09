@@ -5,9 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { SplitLine } from "./split-text";
 
 const STATEMENTS = [
-  { tension: "Imagem não é decoração.",        resolve: "Imagem constrói percepção."        },
-  { tension: "Movimento não é detalhe.",        resolve: "Movimento cria presença."           },
-  { tension: "Estética sem intenção é ruído.",  resolve: "Direção transforma ruído em identidade." },
+  { tension: "Estética sem intenção é ruído.", resolve: "Direção transforma ruído em identidade." },
 ];
 
 function ManifestoLine({ tension, resolve, index }: { tension: string; resolve: string; index: number }) {
@@ -53,7 +51,7 @@ export default function ManifestoMomento2() {
 
   return (
     <section ref={ref} id="momento-2"
-      className="relative px-6 md:px-12 lg:px-16 py-28 md:py-44 border-b border-border overflow-hidden">
+      className="relative px-6 md:px-12 lg:px-16 py-20 md:py-28 border-b border-border overflow-hidden">
       <div className="absolute top-10 right-6 md:right-14 font-display text-[18rem] leading-none text-fg/[0.018] select-none pointer-events-none">02</div>
       <div className="max-w-[1600px] mx-auto">
         <motion.div style={{ opacity: tagOp, y: tagY }} className="mb-14 md:mb-20">

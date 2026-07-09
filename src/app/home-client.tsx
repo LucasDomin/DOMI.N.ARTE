@@ -13,6 +13,7 @@ import FooterMomento from "@/components/footer";
 import CustomCursor from "@/components/cursor";
 import SectionTransition from "@/components/section-transition";
 import ClientsMarquee from "@/components/clients-marquee";
+import FrentesTabs from "@/components/frentes-tabs";
 import type { Project } from "@/db/schema";
 
 export default function HomePageClient({ initialProjects }: { initialProjects: Project[] }) {
@@ -35,6 +36,9 @@ export default function HomePageClient({ initialProjects }: { initialProjects: P
 
           {/* 01 — Parallax hero */}
           <ParallaxHero />
+
+          {/* Frentes de atuação — Identidade / Aplicativos / SaaS */}
+          <FrentesTabs />
 
           {/* Divider */}
           <SectionTransition number="02" label="Manifesto" />
