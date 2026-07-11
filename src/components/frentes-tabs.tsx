@@ -63,12 +63,117 @@ function IconSaaS({ size = 28 }: { size?: number }) {
   );
 }
 
+// ─── Large animated icons — used only in the content panel ────────────────────
+// Each has a slow, elegant, looping animation that reinforces the concept:
+// Identidade → the letter draws itself continuously (type design DNA)
+// Aplicativos → UI blocks softly pulse in sequence (interface breathing)
+// SaaS → the growth line draws and redraws, point travels along it
+
+function IconIdentidadeAnimated({ size = 72 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 1.1} viewBox="0 0 40 44" fill="none">
+      <line x1="4" y1="6" x2="36" y2="6" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" opacity="0.3" />
+      <line x1="4" y1="38" x2="36" y2="38" stroke="currentColor" strokeWidth="0.75" opacity="0.45" />
+
+      {/* Letterform draws in, holds, redraws — infinite loop */}
+      <motion.path
+        d="M10,6 L10,38 M10,6 L20,6 C30,6 32,16 32,22 C32,28 30,38 20,38 L10,38"
+        stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: [0, 1, 1, 0] }}
+        transition={{ duration: 5, times: [0, 0.5, 0.85, 1], repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Control nodes pulse gently, offset in time */}
+      {[
+        { cx: 10, cy: 6, delay: 0 },
+        { cx: 32, cy: 22, delay: 0.6 },
+        { cx: 10, cy: 38, delay: 1.2 },
+      ].map((n, i) => (
+        <motion.circle
+          key={i}
+          cx={n.cx} cy={n.cy} r="1.5" fill="currentColor"
+          initial={{ opacity: 0.3, scale: 1 }}
+          animate={{ opacity: [0.3, 1, 0.3], scale: [1, 1.4, 1] }}
+          transition={{ duration: 2.4, repeat: Infinity, delay: n.delay, ease: "easeInOut" }}
+          style={{ transformOrigin: `${n.cx}px ${n.cy}px` }}
+        />
+      ))}
+    </svg>
+  );
+}
+
+function IconAplicativosAnimated({ size = 72 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 1.1} viewBox="0 0 40 44" fill="none">
+      <rect x="10" y="4" width="20" height="36" rx="3" stroke="currentColor" strokeWidth="1.5" fill="none" />
+
+      {/* Content blocks fade in sequence — like a screen loading */}
+      <motion.line x1="14" y1="11" x2="26" y2="11" stroke="currentColor" strokeWidth="1.5"
+        animate={{ opacity: [0.3, 0.85, 0.3] }}
+        transition={{ duration: 3, repeat: Infinity, delay: 0, ease: "easeInOut" }} />
+
+      <motion.rect x="14" y="16" width="12" height="8" rx="1" stroke="currentColor" strokeWidth="1" fill="none"
+        animate={{ opacity: [0.2, 0.55, 0.2] }}
+        transition={{ duration: 3, repeat: Infinity, delay: 0.4, ease: "easeInOut" }} />
+
+      <motion.line x1="14" y1="28" x2="22" y2="28" stroke="currentColor" strokeWidth="1"
+        animate={{ opacity: [0.25, 0.6, 0.25] }}
+        transition={{ duration: 3, repeat: Infinity, delay: 0.8, ease: "easeInOut" }} />
+
+      <motion.line x1="14" y1="31" x2="26" y2="31" stroke="currentColor" strokeWidth="1"
+        animate={{ opacity: [0.15, 0.4, 0.15] }}
+        transition={{ duration: 3, repeat: Infinity, delay: 1.1, ease: "easeInOut" }} />
+
+      <line x1="17" y1="36" x2="23" y2="36" stroke="currentColor" strokeWidth="1.5" opacity="0.55" />
+
+      {/* Control node — soft breathing pulse */}
+      <motion.circle cx="20" cy="20" r="1.5" fill="currentColor"
+        animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        style={{ transformOrigin: "20px 20px" }}
+      />
+    </svg>
+  );
+}
+
+function IconSaaSAnimated({ size = 72 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 1.1} viewBox="0 0 40 44" fill="none">
+      <rect x="4" y="8" width="32" height="26" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      <circle cx="8" cy="11.5" r="0.75" fill="currentColor" opacity="0.45" />
+      <circle cx="10.5" cy="11.5" r="0.75" fill="currentColor" opacity="0.45" />
+
+      {/* Growth line draws continuously, loops */}
+      <motion.path
+        d="M8,28 L14,22 L19,25 L26,14 L32,17"
+        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: [0, 1, 1], opacity: [0, 1, 1] }}
+        transition={{ duration: 2.6, times: [0, 0.7, 1], repeat: Infinity, repeatDelay: 0.6, ease: "easeInOut" }}
+      />
+
+      {/* Point travels along the line's endpoint, pulses at peak */}
+      <motion.circle
+        cx="26" cy="14" r="1.5" fill="currentColor"
+        animate={{ scale: [0, 1.6, 1], opacity: [0, 1, 0.85] }}
+        transition={{ duration: 2.6, times: [0, 0.75, 1], repeat: Infinity, repeatDelay: 0.6, ease: "easeInOut" }}
+        style={{ transformOrigin: "26px 14px" }}
+      />
+
+      <line x1="8" y1="30" x2="32" y2="30" stroke="currentColor" strokeWidth="0.5" opacity="0.25" strokeDasharray="1.5 1.5" />
+      <line x1="4" y1="38" x2="36" y2="38" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+    </svg>
+  );
+}
+
 const FRENTES = [
   {
     id: "identidade",
     num: "01",
     label: "Identidade Visual",
     Icon: IconIdentidade,
+    IconAnimated: IconIdentidadeAnimated,
     title: "Sistemas visuais que fundam presença.",
     body: "Grid tipográfico, paleta, construção de logotipo, papelaria e guidelines.",
     tags: ["Naming", "Logotipo", "Guidelines", "Papelaria"],
@@ -78,6 +183,7 @@ const FRENTES = [
     num: "02",
     label: "Aplicativos",
     Icon: IconAplicativos,
+    IconAnimated: IconAplicativosAnimated,
     title: "Interfaces que traduzem marca em uso.",
     body: "Design de produto mobile e web. Fluxos, componentes e design system.",
     tags: ["UI/UX", "Design System", "Prototipagem", "Mobile"],
@@ -87,6 +193,7 @@ const FRENTES = [
     num: "03",
     label: "SaaS",
     Icon: IconSaaS,
+    IconAnimated: IconSaaSAnimated,
     title: "Produtos digitais prontos para crescer.",
     body: "Da identidade ao produto funcional — direção de marca integrada ao desenvolvimento.",
     tags: ["Landing Pages", "Dashboards", "Dev + Design", "Growth"],
@@ -96,7 +203,7 @@ const FRENTES = [
 export default function FrentesTabs() {
   const [active, setActive] = useState(0);
   const frente = FRENTES[active];
-  const ActiveIcon = frente.Icon;
+  const ActiveIconAnimated = frente.IconAnimated;
 
   return (
     <section className="relative px-6 md:px-12 lg:px-16 py-16 md:py-20 border-b border-border overflow-hidden">
@@ -187,7 +294,7 @@ export default function FrentesTabs() {
                 <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-accent/30" />
                 <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-accent/30" />
                 <div className="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-accent/30" />
-                <ActiveIcon size={72} />
+                <ActiveIconAnimated key={frente.id} size={72} />
               </div>
             </div>
 
