@@ -359,10 +359,10 @@ export default function ParallaxHero() {
   const text2 = useTransform(p, [0.44, 0.52, 0.64, 0.72], [0, 1, 1, 0]);
   const text3 = useTransform(p, [0.72, 0.82, 1], [0, 1, 1]);
   const glowOp = useTransform(p, [0, 0.5, 1], [0.06, 0.03, 0.14]);
-  const scrollHint = useTransform(p, [0, 0.06], [1, 0]);
+  const scrollHint = useTransform(p, [0, 0.1], [1, 0]);
 
   return (
-    <div ref={ref} className="relative h-[700vh] bg-bg" aria-label="Introdução animada — processo de criação de identidade visual">
+    <div ref={ref} className="relative h-[420vh] bg-bg" aria-label="Introdução animada — processo de criação de identidade visual">
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center" role="presentation" aria-hidden="true">
 
         {/* Ambient glow */}
@@ -393,12 +393,32 @@ export default function ParallaxHero() {
         {/* Step indicator — bottom */}
         <ProgressBar p={p} />
 
-        {/* Scroll hint */}
+        {/* Scroll hint — unmistakable affordance: mouse icon + bouncing chevron + label */}
         <motion.div style={{ opacity: scrollHint }}
-          className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-40 pointer-events-none">
-          <motion.div className="w-px h-10 bg-accent/50"
-            animate={{ scaleY: [0.3, 1, 0.3], opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }} />
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-40 pointer-events-none">
+
+          {/* Mouse icon with animated scroll wheel dot */}
+          <div className="relative w-6 h-10 rounded-full border border-accent/50 flex justify-center pt-2">
+            <motion.div
+              className="w-1 h-1.5 rounded-full bg-accent"
+              animate={{ y: [0, 10, 0], opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </div>
+
+          {/* Bouncing chevron */}
+          <motion.svg
+            width="14" height="8" viewBox="0 0 14 8" fill="none"
+            animate={{ y: [0, 4, 0] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <path d="M1 1L7 7L13 1" stroke="currentColor" strokeWidth="1.5" className="text-accent/70" />
+          </motion.svg>
+
+          {/* Explicit label */}
+          <span className="font-mono text-[9px] tracking-[0.45em] uppercase text-fg-muted">
+            Role para explorar
+          </span>
         </motion.div>
       </div>
     </div>
