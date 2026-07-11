@@ -1,52 +1,77 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { SplitLine } from "./split-text";
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 const STEPS = [
-  { n: "01", title: "Imersão",     body: "Mergulho obsessivo no silêncio entre os concorrentes. Mapeamos as tensões não ditas para projetar a direção exata." },
-  { n: "02", title: "Conceito",    body: "Tradução de premissas abstratas em arquitetura visual severa. Paletas, hierarquias tipográficas, fundamento de movimento." },
-  { n: "03", title: "Construção",  body: "Engenharia criativa sem concessões. Código imersivo, captação autoral, interfaces com valor de marca inegociável." },
-  { n: "04", title: "Refinamento", body: "Ajuste milimétrico de contraste, curvas de aceleração e performance. O trabalho só termina quando a presença é inconfundível." },
+  { n: "01", title: "Imersão",     body: "Mergulho no silêncio entre concorrentes. Mapeamos tensões não ditas." },
+  { n: "02", title: "Conceito",    body: "Premissas abstratas viram arquitetura visual. Paleta, tipografia, movimento." },
+  { n: "03", title: "Construção",  body: "Engenharia criativa sem concessões. Código, captação, interfaces." },
+  { n: "04", title: "Refinamento", body: "Ajuste milimétrico de contraste e performance até a presença ser inconfundível." },
 ];
 
-function Step({ step }: { step: typeof STEPS[0] }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    // CORRETO: entra e fica
-    offset: ["start 88%", "end 5%"],
-  });
-
-  const op   = useTransform(scrollYProgress, [0, 0.2, 0.9, 1], [0, 1, 1, 1]);
-  const x    = useTransform(scrollYProgress, [0, 0.2], [-28, 0]);
-  const lineH = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+// ─── Single step card — compact, interactive ───────────────────────────────────
+function StepCard({ step, index, hovered, setHovered }: {
+  step: typeof STEPS[0];
+  index: number;
+  hovered: number | null;
+  setHovered: (i: number | null) => void;
+}) {
+  const isActive = hovered === index;
+  const isDimmed = hovered !== null && hovered !== index;
 
   return (
-    <motion.div ref={ref} style={{ opacity: op, x }}
-      className="relative flex gap-10 md:gap-16 py-12 md:py-16 border-t border-border/40 group">
-      {/* Vertical line — grows down */}
-      <div className="relative flex-shrink-0 w-px self-stretch">
-        <div className="absolute inset-0 bg-border/40" />
-        <motion.div className="absolute top-0 left-0 w-full bg-accent origin-top" style={{ scaleY: lineH }} />
-      </div>
-
-      <div className="flex-shrink-0 pt-0.5">
-        <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent">{step.n}</span>
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <SplitLine
-          text={step.title}
-          className="font-display text-[clamp(2.5rem,5vw,6.5rem)] leading-none tracking-[-0.04em] text-fg"
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.6, delay: index * 0.08, ease: EASE }}
+      onMouseEnter={() => setHovered(index)}
+      onMouseLeave={() => setHovered(null)}
+      animate={{ opacity: isDimmed ? 0.4 : 1 }}
+      className="relative p-6 md:p-7 rounded-xl border cursor-default group"
+      style={{
+        borderColor: isActive ? "rgba(201,165,108,0.4)" : "var(--color-border)",
+        background: isActive ? "rgba(201,165,108,0.03)" : "transparent",
+        transition: "border-color 0.4s ease, background 0.4s ease",
+      }}
+    >
+      {/* Number + connecting dot */}
+      <div className="flex items-center justify-between mb-8">
+        <span
+          className="font-mono text-[10px] tracking-[0.4em] transition-colors duration-300"
+          style={{ color: isActive ? "#C9A56C" : "var(--color-fg-muted)" }}
+        >
+          {step.n}
+        </span>
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full"
+          animate={{
+            backgroundColor: isActive ? "#C9A56C" : "var(--color-border-light)",
+            scale: isActive ? 1.3 : 1,
+          }}
+          transition={{ duration: 0.3 }}
         />
-        <p className="text-sm text-fg-muted leading-relaxed font-light max-w-md mt-5">{step.body}</p>
       </div>
 
-      <div className="hidden lg:block flex-shrink-0 self-center pointer-events-none select-none">
-        <span className="font-display text-[8rem] leading-none text-fg/[0.025]">{step.n}</span>
-      </div>
+      {/* Title */}
+      <h3 className="font-display text-2xl md:text-[1.85rem] leading-tight tracking-tight text-fg mb-3">
+        {step.title}
+      </h3>
+
+      {/* Body */}
+      <p className="text-[13px] text-fg-muted leading-relaxed font-light">
+        {step.body}
+      </p>
+
+      {/* Bottom accent line — grows on hover */}
+      <motion.div
+        className="absolute bottom-0 left-6 right-6 md:left-7 md:right-7 h-px bg-accent origin-left"
+        animate={{ scaleX: isActive ? 1 : 0 }}
+        transition={{ duration: 0.4, ease: EASE }}
+      />
     </motion.div>
   );
 }
@@ -55,18 +80,36 @@ export default function ProcessMomento4() {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 90%", "start 40%"] });
   const headOp = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const headY  = useTransform(scrollYProgress, [0, 1], [30, 0]);
+  const headY  = useTransform(scrollYProgress, [0, 1], [24, 0]);
+  const [hovered, setHovered] = useState<number | null>(null);
 
   return (
     <section ref={ref} id="momento-4"
-      className="relative px-6 md:px-12 lg:px-16 py-20 md:py-28 border-b border-border overflow-hidden">
-      <div className="absolute top-10 right-6 font-display text-[16rem] leading-none text-fg/[0.018] select-none pointer-events-none">04</div>
+      className="relative px-6 md:px-12 lg:px-16 py-16 md:py-20 border-b border-border overflow-hidden">
+      <div className="absolute top-6 right-6 font-display text-[12rem] leading-none text-fg/[0.015] select-none pointer-events-none">04</div>
+
       <div className="max-w-[1600px] mx-auto">
-        <motion.div style={{ opacity: headOp, y: headY }} className="mb-4">
-          <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent block mb-5">04 / Processo</span>
-          <h2 className="font-display text-[clamp(3.5rem,7vw,8rem)] leading-none tracking-[-0.04em] text-fg">Método</h2>
+        {/* Header — compact, inline */}
+        <motion.div style={{ opacity: headOp, y: headY }}
+          className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 md:mb-12">
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+              <span className="font-mono text-[10px] tracking-[0.5em] uppercase text-accent">04 / Processo</span>
+            </div>
+            <h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] leading-none tracking-[-0.04em] text-fg">Método</h2>
+          </div>
+          <p className="text-xs text-fg-muted font-light max-w-xs">
+            Quatro movimentos, uma direção. Cada etapa constrói sobre a anterior.
+          </p>
         </motion.div>
-        {STEPS.map(s => <Step key={s.n} step={s} />)}
+
+        {/* Grid — 2 cols mobile-md, 4 cols desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          {STEPS.map((step, i) => (
+            <StepCard key={step.n} step={step} index={i} hovered={hovered} setHovered={setHovered} />
+          ))}
+        </div>
       </div>
     </section>
   );
