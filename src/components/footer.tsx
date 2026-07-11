@@ -29,7 +29,7 @@ export default function FooterMomento() {
             <Link href="/" className="font-display text-sm text-fg/60 hover:text-fg transition-colors">
               DOMI<span className="text-accent/60">.</span>N<span className="text-accent/60">.</span>ARTE
             </Link>
-            <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-fg-dim">
+            <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-fg-muted">
               © {new Date().getFullYear()} · Todos os direitos reservados
             </span>
           </div>
@@ -37,12 +37,12 @@ export default function FooterMomento() {
           <div className="flex flex-wrap items-center gap-6 md:gap-8">
             {SOCIALS.map(s => (
               <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                className="font-mono text-[9px] tracking-[0.35em] uppercase text-fg-dim hover:text-fg transition-colors duration-300">
+                className="font-mono text-[9px] tracking-[0.35em] uppercase text-fg-muted hover:text-fg transition-colors duration-300">
                 {s.label}
               </a>
             ))}
             <Link href="/sobre"
-              className="font-mono text-[9px] tracking-[0.35em] uppercase text-fg-dim hover:text-fg transition-colors duration-300">
+              className="font-mono text-[9px] tracking-[0.35em] uppercase text-fg-muted hover:text-fg transition-colors duration-300">
               Sobre
             </Link>
             <Link href="/admin/login"

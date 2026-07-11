@@ -99,7 +99,7 @@ export default function FrentesTabs() {
   const ActiveIcon = frente.Icon;
 
   return (
-    <section className="relative px-6 md:px-12 lg:px-16 py-24 md:py-32 border-b border-border overflow-hidden">
+    <section className="relative px-6 md:px-12 lg:px-16 py-16 md:py-20 border-b border-border overflow-hidden">
       {/* Ambient background glow — same language as parallax */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
         style={{
@@ -111,12 +111,15 @@ export default function FrentesTabs() {
       <div className="relative max-w-[1600px] mx-auto">
 
         {/* Section tag */}
-        <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent block mb-10 md:mb-14">
-          Frentes de Atuação
-        </span>
+        <div className="flex items-center gap-3 mb-8 md:mb-10">
+          <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+          <span className="font-mono text-[10px] tracking-[0.5em] uppercase text-accent">
+            Frentes de Atuação
+          </span>
+        </div>
 
         {/* ── Tab blocks — big cards with icon ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-16 md:mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-10 md:mb-12">
           {FRENTES.map((f, i) => {
             const isActive = active === i;
             return (
@@ -142,12 +145,12 @@ export default function FrentesTabs() {
 
                 <div className="min-w-0">
                   <span className={`font-mono text-[8px] tracking-[0.3em] block mb-1.5 transition-colors duration-300 ${
-                    isActive ? "text-accent" : "text-fg-dim"
+                    isActive ? "text-accent" : "text-fg-muted"
                   }`}>
                     {f.num}
                   </span>
                   <span className={`font-display text-xl md:text-2xl tracking-tight leading-none block transition-colors duration-300 ${
-                    isActive ? "text-fg" : "text-fg-dim group-hover:text-fg-muted"
+                    isActive ? "text-fg" : "text-fg-muted group-hover:text-fg"
                   }`}>
                     {f.label}
                   </span>
@@ -203,7 +206,7 @@ export default function FrentesTabs() {
                   {frente.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="font-mono text-[9px] tracking-[0.2em] uppercase text-fg-dim border border-border px-3 py-1.5 rounded-sm"
+                      className="font-mono text-[9px] tracking-[0.2em] uppercase text-fg-muted border border-border px-3 py-1.5 rounded-sm"
                     >
                       {tag}
                     </span>

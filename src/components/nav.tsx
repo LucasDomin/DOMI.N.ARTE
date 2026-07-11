@@ -54,7 +54,7 @@ export default function NavMomento() {
           <nav className="hidden md:flex items-center gap-10" aria-label="Navegação principal">
             {LINKS.map((l) => (
               <Link key={l.label} href={l.href}
-                className="relative font-mono text-[10px] tracking-[0.3em] uppercase text-fg-dim hover:text-fg transition-colors duration-300 group">
+                className="relative font-mono text-[10px] tracking-[0.3em] uppercase text-fg-muted hover:text-fg transition-colors duration-300 group">
                 {l.label}
                 <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-accent transition-all duration-500 group-hover:w-full" />
               </Link>
@@ -63,7 +63,7 @@ export default function NavMomento() {
 
           {/* Desktop CTA */}
           <Link href="/#momento-5"
-            className="hidden md:inline-flex group items-center gap-3 font-mono text-[10px] tracking-[0.3em] uppercase text-fg-dim hover:text-accent transition-colors duration-300">
+            className="hidden md:inline-flex group items-center gap-3 font-mono text-[10px] tracking-[0.3em] uppercase text-fg-muted hover:text-accent transition-colors duration-300">
             <span>Contato</span>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
               <path d="M1 11L11 1M11 1H3M11 1V9" stroke="currentColor" strokeWidth="1" />
@@ -96,7 +96,7 @@ export default function NavMomento() {
               <nav className="px-6 py-6 flex flex-col gap-5" aria-label="Navegação mobile">
                 {LINKS.map(l => (
                   <Link key={l.label} href={l.href} onClick={() => setOpen(false)}
-                    className="font-mono text-[11px] tracking-[0.4em] uppercase text-fg-dim hover:text-fg transition-colors">
+                    className="font-mono text-[11px] tracking-[0.4em] uppercase text-fg-muted hover:text-fg transition-colors">
                     {l.label}
                   </Link>
                 ))}

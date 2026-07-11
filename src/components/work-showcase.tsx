@@ -224,7 +224,7 @@ export default function WorkShowcaseMomento3({
                 key={f}
                 onClick={() => setFilter(f)}
                 className={`relative font-mono text-[9px] tracking-[0.35em] uppercase pb-1.5 transition-colors duration-300 ${
-                  filter === f ? "text-fg" : "text-fg-dim hover:text-fg-muted"
+                  filter === f ? "text-fg" : "text-fg-muted hover:text-fg"
                 }`}
               >
                 {f}

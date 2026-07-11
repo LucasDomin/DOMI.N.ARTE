@@ -19,7 +19,7 @@ export default function ConviteMomento5() {
     <section
       ref={ref}
       id="momento-5"
-      className="relative px-6 md:px-12 lg:px-16 py-32 md:py-48 overflow-hidden border-b border-border"
+      className="relative px-6 md:px-12 lg:px-16 py-20 md:py-28 overflow-hidden border-b border-border"
     >
       {/* Ambient glow */}
       <motion.div className="absolute inset-0 pointer-events-none" style={{ opacity: glowOp }}>
@@ -39,8 +39,9 @@ export default function ConviteMomento5() {
       <div className="relative z-10 max-w-[1600px] mx-auto">
 
         {/* Section tag */}
-        <div className="mb-14 md:mb-20">
-          <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent">
+        <div className="flex items-center gap-3 mb-10 md:mb-14">
+          <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+          <span className="font-mono text-[10px] tracking-[0.5em] uppercase text-accent">
             05 / Contato
           </span>
         </div>
@@ -55,33 +56,33 @@ export default function ConviteMomento5() {
                 Vamos construir
               </h2>
             </div>
-            <div className="overflow-hidden mb-16">
+            <div className="overflow-hidden mb-10">
               <h2 className="font-display italic text-[clamp(2.8rem,5vw,7rem)] leading-[0.88] tracking-[-0.04em] text-accent">
                 algo real.
               </h2>
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-6">
               <div>
-                <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
+                <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg-muted mb-2">
                   Disponibilidade
                 </p>
                 <p className="font-display italic text-xl text-fg">Aceitando projetos para Q3 2026</p>
               </div>
               <div>
-                <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
+                <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg-muted mb-2">
                   Investimento mínimo
                 </p>
                 <p className="font-display italic text-xl text-fg">A partir de R$ 15.000</p>
               </div>
               <div>
-                <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
+                <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg-muted mb-2">
                   Localização
                 </p>
                 <p className="font-display italic text-xl text-fg">Brasil — Atendimento global</p>
               </div>
               <div className="pt-4 border-t border-border/40">
-                <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-2">
+                <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg-muted mb-2">
                   Prefere e-mail direto?
                 </p>
                 <a
@@ -96,7 +97,7 @@ export default function ConviteMomento5() {
 
           {/* Right — qualification form */}
           <div>
-            <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-10">
+            <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg-muted mb-8">
               Preencha abaixo — respondemos em até 48h úteis.
             </p>
             <ContactForm />

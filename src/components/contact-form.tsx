@@ -54,7 +54,7 @@ export default function ContactForm() {
         <p className="font-display text-3xl md:text-4xl text-fg leading-tight">
           Mensagem recebida.
         </p>
-        <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg-dim">
+        <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg-muted">
           Respondemos em até 48h úteis.
         </p>
       </div>
@@ -66,7 +66,7 @@ export default function ContactForm() {
       {/* Row 1 — Name + Company */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim block">
+          <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-muted block">
             Nome *
           </label>
           <input
@@ -79,7 +79,7 @@ export default function ContactForm() {
           />
         </div>
         <div className="space-y-2">
-          <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim block">
+          <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-muted block">
             Empresa
           </label>
           <input
@@ -94,7 +94,7 @@ export default function ContactForm() {
 
       {/* Email */}
       <div className="space-y-2">
-        <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim block">
+        <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-muted block">
           E-mail *
         </label>
         <input
@@ -110,7 +110,7 @@ export default function ContactForm() {
       {/* Row 2 — Type + Budget */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim block">
+          <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-muted block">
             Tipo de projeto *
           </label>
           <select
@@ -126,7 +126,7 @@ export default function ContactForm() {
           </select>
         </div>
         <div className="space-y-2">
-          <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim block">
+          <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-muted block">
             Investimento estimado
           </label>
           <select
@@ -144,7 +144,7 @@ export default function ContactForm() {
 
       {/* Message */}
       <div className="space-y-2">
-        <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim block">
+        <label className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-muted block">
           Contexto do projeto
         </label>
         <textarea
@@ -166,7 +166,7 @@ export default function ContactForm() {
           <span>{state === "sending" ? "Enviando..." : "Enviar"}</span>
           <span className="block w-10 h-px bg-fg-dim group-hover:w-20 group-hover:bg-accent transition-all duration-700" />
         </button>
-        <p className="font-mono text-[9px] text-fg-dim/50 tracking-wider">
+        <p className="font-mono text-[9px] text-fg-muted/70 tracking-wider">
           Resposta em até 48h úteis
         </p>
       </div>

@@ -27,7 +27,7 @@ export default function SectionTransition({ number, label }: { number: string; l
       {/* Label */}
       <motion.span
         style={{ opacity: numOp }}
-        className="absolute right-6 md:right-12 font-mono text-[9px] tracking-[0.5em] uppercase text-fg-dim"
+        className="absolute right-6 md:right-12 font-mono text-[9px] tracking-[0.5em] uppercase text-fg-muted"
       >
         {label}
       </motion.span>

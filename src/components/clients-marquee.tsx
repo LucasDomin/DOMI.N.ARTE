@@ -12,10 +12,10 @@ function LogoItem({ client }: { client: Client }) {
     <img
       src={client.logoUrl}
       alt={client.name}
-      className="h-10 md:h-14 w-auto object-contain grayscale opacity-50 group-hover:opacity-95 group-hover:grayscale-0 transition-all duration-500"
+      className="h-10 md:h-14 w-auto object-contain grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-500"
     />
   ) : (
-    <span className="font-display text-2xl md:text-3xl text-fg-dim opacity-50 group-hover:opacity-95 group-hover:text-fg transition-all duration-500 whitespace-nowrap">
+    <span className="font-display text-2xl md:text-3xl text-fg-muted opacity-60 group-hover:opacity-100 group-hover:text-fg transition-all duration-500 whitespace-nowrap">
       {client.name}
     </span>
   );
@@ -47,7 +47,7 @@ export default function ClientsMarquee() {
   const duration = Math.max(18, clients.length * 3.5);
 
   return (
-    <section className="relative py-20 md:py-28 border-y border-border/30 overflow-hidden bg-bg-soft/10">
+    <section className="relative py-14 md:py-18 border-y border-border/30 overflow-hidden bg-bg-soft/10">
       <style>{`
         @keyframes marquee-scroll {
           from { transform: translateX(0); }
@@ -65,12 +65,12 @@ export default function ClientsMarquee() {
       `}</style>
 
       {/* Label */}
-      <div className="px-6 md:px-12 lg:px-16 mb-10">
-        <div className="max-w-[1600px] mx-auto flex items-center gap-4">
-          <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-dim">
+      <div className="px-6 md:px-12 lg:px-16 mb-6">
+        <div className="max-w-[1600px] mx-auto flex items-center gap-3">
+          <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+          <span className="font-mono text-[10px] tracking-[0.5em] uppercase text-fg-muted">
             Marcas que confiaram no processo
           </span>
-          <div className="flex-1 h-px bg-border/40" />
         </div>
       </div>
 

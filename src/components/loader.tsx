@@ -135,11 +135,11 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
 
           {/* Discipline line */}
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4">
-            <div className="w-8 h-px bg-fg-dim/30" />
-            <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-dim">
+            <div className="w-8 h-px bg-fg-muted/40" />
+            <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-fg-muted">
               Direção Criativa
             </span>
-            <div className="w-8 h-px bg-fg-dim/30" />
+            <div className="w-8 h-px bg-fg-muted/40" />
           </div>
         </motion.div>
       )}

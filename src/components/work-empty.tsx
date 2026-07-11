@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function WorkEmpty() {
   return (
-    <div className="px-6 md:px-12 lg:px-16 py-40 md:py-60 border-t border-border/30">
+    <div className="px-6 md:px-12 lg:px-16 py-24 md:py-32 border-t border-border/30">
       <div className="max-w-[1600px] mx-auto">
         <div className="max-w-lg">
           <motion.div
@@ -30,17 +30,17 @@ export default function WorkEmpty() {
             </p>
             <p className="font-display text-[clamp(2rem,4vw,4rem)] leading-none tracking-tight text-fg mb-6">
               Os projetos estão<br />
-              <em className="text-fg/40">a caminho.</em>
+              <em className="text-fg-muted">a caminho.</em>
             </p>
             <p className="text-sm text-fg-muted leading-relaxed font-light mb-10 max-w-sm">
               Estamos documentando os trabalhos recentes com o cuidado que cada projeto merece. Volte em breve.
             </p>
             <Link
               href="/#momento-5"
-              className="group inline-flex items-center gap-4 font-mono text-[10px] tracking-[0.5em] uppercase text-fg-dim hover:text-fg transition-colors duration-500"
+              className="group inline-flex items-center gap-4 font-mono text-[10px] tracking-[0.5em] uppercase text-fg-muted hover:text-fg transition-colors duration-500"
             >
               <span>Iniciar conversa</span>
-              <span className="w-8 h-px bg-fg-dim group-hover:w-16 group-hover:bg-accent transition-all duration-700" />
+              <span className="w-8 h-px bg-fg-muted group-hover:w-16 group-hover:bg-accent transition-all duration-700" />
             </Link>
           </motion.div>
         </div>
