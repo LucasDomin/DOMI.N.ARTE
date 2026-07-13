@@ -27,7 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const newStill: Still = { url: body.url, type: body.type || "branding", order: current.length };
     await db.update(projects).set({ stills: [...current, newStill], updatedAt: new Date() }).where(eq(projects.id, parseInt(id)));
     return NextResponse.json(newStill, { status: 201 });
-  } catch (error) { return NextResponse.json({ error: String(error) }, { status: 500 }); }
+  } catch (error) { console.error("Images route error:", error); return NextResponse.json({ error: "Não foi possível processar a imagem." }, { status: 500 }); }
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -50,7 +50,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ success: true });
     }
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  } catch (error) { return NextResponse.json({ error: String(error) }, { status: 500 }); }
+  } catch (error) { console.error("Images route error:", error); return NextResponse.json({ error: "Não foi possível processar a imagem." }, { status: 500 }); }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -64,5 +64,5 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const filtered = ((project.stills as Still[]) || []).filter((s) => s.url !== url).map((s, i) => ({ ...s, order: i }));
     await db.update(projects).set({ stills: filtered, updatedAt: new Date() }).where(eq(projects.id, parseInt(id)));
     return NextResponse.json({ success: true, stills: filtered });
-  } catch (error) { return NextResponse.json({ error: String(error) }, { status: 500 }); }
+  } catch (error) { console.error("Images route error:", error); return NextResponse.json({ error: "Não foi possível processar a imagem." }, { status: 500 }); }
 }

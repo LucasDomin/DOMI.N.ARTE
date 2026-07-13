@@ -38,7 +38,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const [project] = await db.update(projects).set(updateData).where(eq(projects.id, parseInt(id))).returning();
     return project ? NextResponse.json(project) : NextResponse.json({ error: "Not found" }, { status: 404 });
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    console.error(`PUT /api/projects/[id] failed:`, error);
+    return NextResponse.json({ error: "Não foi possível atualizar o projeto." }, { status: 500 });
   }
 }
 
@@ -49,6 +50,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     await db.delete(projects).where(eq(projects.id, parseInt(id)));
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    console.error(`DELETE /api/projects/[id] failed:`, error);
+    return NextResponse.json({ error: "Não foi possível excluir o projeto." }, { status: 500 });
   }
 }

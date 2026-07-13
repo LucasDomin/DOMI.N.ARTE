@@ -359,7 +359,7 @@ export default function ParallaxHero() {
   const text2 = useTransform(p, [0.44, 0.52, 0.64, 0.72], [0, 1, 1, 0]);
   const text3 = useTransform(p, [0.72, 0.82, 1], [0, 1, 1]);
   const glowOp = useTransform(p, [0, 0.5, 1], [0.06, 0.03, 0.14]);
-  const scrollHint = useTransform(p, [0, 0.1], [1, 0]);
+  const scrollHint = useTransform(p, [0, 0.12], [1, 0]);
 
   return (
     <div ref={ref} className="relative h-[420vh] bg-bg" aria-label="Introdução animada — processo de criação de identidade visual">
@@ -393,32 +393,46 @@ export default function ParallaxHero() {
         {/* Step indicator — bottom */}
         <ProgressBar p={p} />
 
-        {/* Scroll hint — unmistakable affordance: mouse icon + bouncing chevron + label */}
+        {/* Scroll hint — high-contrast pill with glow, impossible to miss */}
         <motion.div style={{ opacity: scrollHint }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-40 pointer-events-none">
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-40 pointer-events-none">
 
-          {/* Mouse icon with animated scroll wheel dot */}
-          <div className="relative w-6 h-10 rounded-full border border-accent/50 flex justify-center pt-2">
-            <motion.div
-              className="w-1 h-1.5 rounded-full bg-accent"
-              animate={{ y: [0, 10, 0], opacity: [1, 0.3, 1] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-            />
+          {/* Glow behind the whole hint */}
+          <div className="absolute -inset-6 rounded-full pointer-events-none"
+            style={{ background: "radial-gradient(circle, rgba(201,165,108,0.15) 0%, transparent 70%)" }} />
+
+          {/* Pill container — background makes it pop against any scene */}
+          <div className="relative flex flex-col items-center gap-3 px-5 py-4 rounded-2xl border border-accent/30"
+            style={{ background: "rgba(10,9,8,0.55)", backdropFilter: "blur(8px)" }}>
+
+            {/* Mouse icon — bigger, higher contrast */}
+            <div className="relative w-7 h-11 rounded-full border-[1.5px] border-accent flex justify-center pt-2.5">
+              <motion.div
+                className="w-1.5 h-2 rounded-full bg-accent"
+                animate={{ y: [0, 12, 0], opacity: [1, 0.2, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </div>
+
+            {/* Explicit label — larger, higher contrast */}
+            <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg font-medium">
+              Role para explorar
+            </span>
+
+            {/* Bouncing double chevron — stronger motion cue */}
+            <div className="flex flex-col items-center -mt-1 -space-y-1.5">
+              <motion.svg width="16" height="9" viewBox="0 0 16 9" fill="none"
+                animate={{ y: [0, 5, 0], opacity: [1, 0.4, 1] }}
+                transition={{ duration: 1.3, repeat: Infinity, ease: "easeInOut", delay: 0 }}>
+                <path d="M1 1L8 8L15 1" stroke="#C9A56C" strokeWidth="1.75" strokeLinecap="round" />
+              </motion.svg>
+              <motion.svg width="16" height="9" viewBox="0 0 16 9" fill="none"
+                animate={{ y: [0, 5, 0], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1.3, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}>
+                <path d="M1 1L8 8L15 1" stroke="#C9A56C" strokeWidth="1.75" strokeLinecap="round" />
+              </motion.svg>
+            </div>
           </div>
-
-          {/* Bouncing chevron */}
-          <motion.svg
-            width="14" height="8" viewBox="0 0 14 8" fill="none"
-            animate={{ y: [0, 4, 0] }}
-            transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <path d="M1 1L7 7L13 1" stroke="currentColor" strokeWidth="1.5" className="text-accent/70" />
-          </motion.svg>
-
-          {/* Explicit label */}
-          <span className="font-mono text-[9px] tracking-[0.45em] uppercase text-fg-muted">
-            Role para explorar
-          </span>
         </motion.div>
       </div>
     </div>

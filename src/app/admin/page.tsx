@@ -127,7 +127,7 @@ export default function AdminPage() {
   // DUPLICATE WORK
   const handleDuplicate = async (project: Project) => {
     try {
-      const duplicatedData: any = {
+      const duplicatedData: Partial<Project> = {
         ...project,
         title: `${project.title} (Cópia)`,
         slug: `${project.slug}-copia-${Math.floor(Math.random() * 1000)}`,
@@ -446,6 +446,7 @@ export default function AdminPage() {
                               </button>
                               <button
                                 onClick={() => handleDelete(project.id)}
+                                aria-label={`Excluir projeto ${project.title}`}
                                 className="text-[10px] tracking-[0.1em] uppercase text-fg-dim hover:text-red-500 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />

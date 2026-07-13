@@ -1,16 +1,19 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 import { Trash2, GripVertical, Eye, EyeOff, Plus, Upload } from "lucide-react";
 import type { Client } from "@/db/schema";
 
 // ─── Single row: editable name, logo, link, order, visibility ────────────────
 function ClientRow({
   client,
+  index,
   onUpdate,
   onDelete,
 }: {
   client: Client;
+  index: number;
   onUpdate: (id: number, data: Partial<Client>) => void;
   onDelete: (id: number) => void;
 }) {
@@ -50,68 +53,89 @@ function ClientRow({
   };
 
   return (
-    <div className="flex items-center gap-4 p-4 rounded-xl bg-bg-soft/20 border border-border group">
-      <GripVertical className="w-4 h-4 text-fg-dim/40 flex-shrink-0 cursor-grab" />
+    <Draggable draggableId={String(client.id)} index={index}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          className={`flex items-center gap-4 p-4 rounded-xl bg-bg-soft/20 border transition-shadow ${
+            snapshot.isDragging ? "border-accent/50 shadow-2xl bg-bg-elevated" : "border-border"
+          }`}
+        >
+          {/* Drag handle — now functional */}
+          <button
+            {...provided.dragHandleProps}
+            aria-label={`Arrastar para reordenar ${client.name}`}
+            className="flex-shrink-0 text-fg-dim hover:text-fg-muted transition-colors cursor-grab active:cursor-grabbing touch-none"
+          >
+            <GripVertical className="w-4 h-4" />
+          </button>
 
-      {/* Logo preview + upload */}
-      <div className="relative flex-shrink-0">
-        <label className="w-14 h-14 rounded-lg bg-bg-elevated border border-border flex items-center justify-center cursor-pointer overflow-hidden hover:border-accent/50 transition-colors">
-          {local.logoUrl ? (
-            <img src={local.logoUrl} alt="" className="w-full h-full object-contain p-1.5" />
-          ) : (
-            <Upload className="w-4 h-4 text-fg-dim" />
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
-          />
-        </label>
-        {uploading && (
-          <div className="absolute inset-0 bg-bg/80 rounded-lg flex items-center justify-center">
-            <div className="w-3 h-3 border border-accent border-t-transparent rounded-full animate-spin" />
+          {/* Logo preview + upload */}
+          <div className="relative flex-shrink-0">
+            <label className="w-14 h-14 rounded-lg bg-bg-elevated border border-border flex items-center justify-center cursor-pointer overflow-hidden hover:border-accent/50 transition-colors">
+              {local.logoUrl ? (
+                <img src={local.logoUrl} alt="" className="w-full h-full object-contain p-1.5" />
+              ) : (
+                <Upload className="w-4 h-4 text-fg-muted" />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
+              />
+            </label>
+            {uploading && (
+              <div className="absolute inset-0 bg-bg/80 rounded-lg flex items-center justify-center">
+                <div className="w-3 h-3 border border-accent border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* Name */}
-      <input
-        type="text"
-        value={local.name}
-        onChange={(e) => commit("name", e.target.value)}
-        onBlur={save}
-        placeholder="Nome do cliente"
-        className="flex-1 min-w-0 bg-transparent border-b border-border focus:border-accent outline-none py-1.5 text-sm text-fg placeholder:text-fg-dim/40 transition-colors"
-      />
+          {/* Name */}
+          <input
+            type="text"
+            value={local.name}
+            onChange={(e) => commit("name", e.target.value)}
+            onBlur={save}
+            placeholder="Nome do cliente"
+            aria-label="Nome do cliente"
+            className="flex-1 min-w-0 bg-transparent border-b border-border focus:border-accent outline-none py-1.5 text-sm text-fg placeholder:text-fg-dim/40 transition-colors"
+          />
 
-      {/* Link */}
-      <input
-        type="url"
-        value={local.link ?? ""}
-        onChange={(e) => commit("link", e.target.value)}
-        onBlur={save}
-        placeholder="https://..."
-        className="flex-1 min-w-0 bg-transparent border-b border-border focus:border-accent outline-none py-1.5 text-sm text-fg-muted placeholder:text-fg-dim/40 transition-colors font-mono"
-      />
+          {/* Link */}
+          <input
+            type="url"
+            value={local.link ?? ""}
+            onChange={(e) => commit("link", e.target.value)}
+            onBlur={save}
+            placeholder="https://..."
+            aria-label="Link do cliente (opcional)"
+            className="flex-1 min-w-0 bg-transparent border-b border-border focus:border-accent outline-none py-1.5 text-sm text-fg-muted placeholder:text-fg-dim/40 transition-colors font-mono"
+          />
 
-      {/* Visibility toggle */}
-      <button
-        onClick={() => onUpdate(client.id, { visible: !client.visible })}
-        title={client.visible ? "Ocultar da barra" : "Mostrar na barra"}
-        className="flex-shrink-0 text-fg-dim hover:text-accent transition-colors"
-      >
-        {client.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-      </button>
+          {/* Visibility toggle */}
+          <button
+            onClick={() => onUpdate(client.id, { visible: !client.visible })}
+            title={client.visible ? "Ocultar da barra" : "Mostrar na barra"}
+            aria-label={client.visible ? "Ocultar cliente da barra pública" : "Mostrar cliente na barra pública"}
+            className="flex-shrink-0 text-fg-muted hover:text-accent transition-colors"
+          >
+            {client.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          </button>
 
-      {/* Delete */}
-      <button
-        onClick={() => onDelete(client.id)}
-        className="flex-shrink-0 text-fg-dim hover:text-red-500 transition-colors"
-      >
-        <Trash2 className="w-4 h-4" />
-      </button>
-    </div>
+          {/* Delete */}
+          <button
+            onClick={() => onDelete(client.id)}
+            aria-label={`Remover cliente ${client.name}`}
+            className="flex-shrink-0 text-fg-muted hover:text-red-500 transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+    </Draggable>
   );
 }
 
@@ -144,10 +168,11 @@ export default function ClientsManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Novo Cliente", logoUrl: "", link: "", order: clients.length }),
       });
+      if (!res.ok) return;
       const created = await res.json();
       setClients((prev) => [...prev, created]);
     } catch {
-      // silent
+      // silent — network failure, user can retry
     }
   };
 
@@ -160,7 +185,8 @@ export default function ClientsManager() {
         body: JSON.stringify(data),
       });
     } catch {
-      // revert on failure could be added here
+      // optimistic update stands — a full revert-on-failure could be added
+      // here if this ever needs to be bulletproof against flaky networks
     }
   };
 
@@ -174,13 +200,41 @@ export default function ClientsManager() {
     }
   };
 
+  // Real drag-and-drop reordering — persists new order to the database
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    const from = result.source.index;
+    const to = result.destination.index;
+    if (from === to) return;
+
+    const reordered = Array.from(clients);
+    const [moved] = reordered.splice(from, 1);
+    reordered.splice(to, 0, moved);
+
+    // Update local state immediately (optimistic)
+    setClients(reordered);
+
+    // Persist new order values to the database
+    reordered.forEach((c, i) => {
+      if (c.order !== i) {
+        fetch(`/api/clients/${c.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ order: i }),
+        }).catch(() => {
+          // best-effort — order will resync on next fetchClients()
+        });
+      }
+    });
+  };
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center justify-between pb-4 border-b border-border">
         <div>
           <h2 className="font-display text-3xl text-fg">Barra de Clientes</h2>
-          <p className="text-xs text-fg-dim mt-1">
-            Logos exibidos na barra rolante da home. Clique na logo para trocar a imagem.
+          <p className="text-xs text-fg-muted mt-1">
+            Logos exibidos na barra rolante da home. Arraste pelo ícone à esquerda para reordenar.
           </p>
         </div>
         <button
@@ -209,14 +263,21 @@ export default function ClientsManager() {
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {clients.map((c) => (
-            <ClientRow key={c.id} client={c} onUpdate={handleUpdate} onDelete={handleDelete} />
-          ))}
-        </div>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="clients-list">
+            {(provided) => (
+              <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-3">
+                {clients.map((c, i) => (
+                  <ClientRow key={c.id} client={c} index={i} onUpdate={handleUpdate} onDelete={handleDelete} />
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       )}
 
-      <p className="text-[10px] text-fg-dim font-mono pt-2">
+      <p className="text-[10px] text-fg-muted font-mono pt-2">
         Dica: deixe o campo de link vazio se não quiser que a logo seja clicável. Logos ocultas (ícone de olho fechado) não aparecem na barra pública.
       </p>
     </div>

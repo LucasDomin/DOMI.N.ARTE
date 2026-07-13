@@ -26,10 +26,20 @@ export async function POST(req: NextRequest) {
   if (!db) return NextResponse.json({ error: "Database unavailable" }, { status: 503 });
   try {
     const body = await req.json();
+
+    if (!body.title || typeof body.title !== "string" || !body.title.trim()) {
+      return NextResponse.json({ error: "O título do projeto é obrigatório." }, { status: 400 });
+    }
+
     const slug = body.slug || body.title.toLowerCase().normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+
+    if (!slug) {
+      return NextResponse.json({ error: "Não foi possível gerar um slug válido a partir do título." }, { status: 400 });
+    }
+
     const [project] = await db.insert(projects).values({
-      slug, title: body.title,
+      slug, title: body.title.trim(),
       subtitle: body.subtitle || "", category: body.category || "identidade",
       client: body.client || "", year: body.year || "", location: body.location || "",
       duration: body.duration || "", format: body.format || "",
@@ -47,6 +57,12 @@ export async function POST(req: NextRequest) {
     }).returning();
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    // Unique constraint violation on slug — friendly message instead of raw DB error
+    const msg = error instanceof Error ? error.message : "";
+    if (msg.includes("unique") || msg.includes("duplicate")) {
+      return NextResponse.json({ error: "Já existe um projeto com esse slug. Escolha outro título ou slug." }, { status: 409 });
+    }
+    console.error("POST /api/projects failed:", error);
+    return NextResponse.json({ error: "Não foi possível criar o projeto. Tente novamente." }, { status: 500 });
   }
 }

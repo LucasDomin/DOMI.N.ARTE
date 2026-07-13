@@ -51,7 +51,7 @@ export const projects = pgTable("projects", {
 export const clients = pgTable("clients", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  logoUrl: text("logo_url").notNull(),
+  logoUrl: text("logo_url").notNull().default(""),
   link: text("link").default(""), // URL aberta ao clicar na logo (opcional)
   order: integer("order").notNull().default(0),
   visible: boolean("visible").notNull().default(true),

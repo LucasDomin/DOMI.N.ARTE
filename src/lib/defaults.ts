@@ -7,6 +7,8 @@
  * Enquanto não tem projetos reais, a galeria ficará vazia (melhor que fake).
  */
 
+import type { Project } from "@/db/schema";
+
 export interface Still {
   url: string;
   type: "branding" | "motion" | "component" | "editorial";
@@ -15,7 +17,7 @@ export interface Still {
 
 // Intencionalmente vazio — sem projetos fictícios.
 // A galeria mostra "Em breve" até projetos reais serem adicionados via /admin.
-export const DEFAULT_PROJECTS: any[] = [];
+export const DEFAULT_PROJECTS: Project[] = [];
 
 export const DEFAULT_SITE_CONFIG = {
   id: "default",

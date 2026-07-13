@@ -16,7 +16,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const [client] = await db.update(clients).set(updateData).where(eq(clients.id, parseInt(id))).returning();
     return client ? NextResponse.json(client) : NextResponse.json({ error: "Not found" }, { status: 404 });
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    console.error("PUT /api/clients/[id] failed:", error);
+    return NextResponse.json({ error: "Não foi possível atualizar o cliente." }, { status: 500 });
   }
 }
 
@@ -27,6 +28,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     await db.delete(clients).where(eq(clients.id, parseInt(id)));
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    console.error("DELETE /api/clients/[id] failed:", error);
+    return NextResponse.json({ error: "Não foi possível remover o cliente." }, { status: 500 });
   }
 }

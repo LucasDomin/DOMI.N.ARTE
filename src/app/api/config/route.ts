@@ -30,6 +30,7 @@ export async function PUT(req: NextRequest) {
       .returning();
     return NextResponse.json(updated);
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    console.error("PUT /api/config failed:", error);
+    return NextResponse.json({ error: "Não foi possível salvar as configurações." }, { status: 500 });
   }
 }
