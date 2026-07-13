@@ -4,7 +4,9 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import type { Project } from "@/db/schema";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import NavMomento from "@/components/nav";
+import FooterMomento from "@/components/footer";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -345,33 +347,17 @@ export default function WorkPageClient({
       <div className="grain" />
       <div className="vignette" />
 
-      {/* Fixed header */}
-      <header className="fixed top-0 left-0 right-0 z-50 py-6 bg-gradient-to-b from-bg via-bg/80 to-transparent pointer-events-none">
-        <div className="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16 flex items-center justify-between pointer-events-auto">
-          <Link
-            href="/"
-            className="group flex items-center gap-2 text-xs tracking-[0.2em] uppercase font-mono text-fg-muted hover:text-fg transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-            <span>Galeria</span>
-          </Link>
-          <Link href="/" className="font-display text-xl text-fg hover:text-accent transition-colors">
-            DOMI<span className="text-accent">.</span>N<span className="text-accent">.</span>ARTE
-          </Link>
-        </div>
-      </header>
+      {/* Navegação completa e consistente com o resto do site.
+          O link "Galeria" do NavMomento já cumpre o papel de "voltar",
+          apontando para /#momento-3 — mantém a mesma UX sem duplicar código. */}
+      <NavMomento />
 
       <CinematicHero project={project} />
       <NarrativeSection project={project} />
       <StillsGallery project={project} />
       {nextProject && <NextProjectGate project={nextProject} />}
 
-      <footer className="relative border-t border-border py-12 px-6 md:px-12 lg:px-16 bg-bg">
-        <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] tracking-[0.25em] uppercase font-mono text-fg-dim">
-          <p>© 2025 DOMI.N.ARTE · ASSINATURA CRIATIVA</p>
-          <Link href="/" className="hover:text-fg transition-colors">Voltar ao Início</Link>
-        </div>
-      </footer>
+      <FooterMomento />
     </main>
   );
 }

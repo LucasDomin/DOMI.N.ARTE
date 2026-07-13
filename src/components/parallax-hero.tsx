@@ -336,7 +336,7 @@ function ProgressBar({ p }: { p: MotionValue<number> }) {
   const opacities = [s1, s2, s3];
 
   return (
-    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-40 flex items-center gap-6">
+    <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-5 md:gap-6">
       {labels.map(([num, label], i) => (
         <motion.div key={num} style={{ opacity: opacities[i] }} className="flex items-center gap-2">
           <span className="font-mono text-[8px] tracking-[0.4em] uppercase text-accent">{num}</span>
@@ -393,9 +393,9 @@ export default function ParallaxHero() {
         {/* Step indicator — bottom */}
         <ProgressBar p={p} />
 
-        {/* Scroll hint — high-contrast pill with glow, impossible to miss */}
+        {/* Scroll hint — positioned well above the ProgressBar to avoid any overlap */}
         <motion.div style={{ opacity: scrollHint }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-40 pointer-events-none">
+          className="absolute bottom-24 md:bottom-28 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-40 pointer-events-none">
 
           {/* Glow behind the whole hint */}
           <div className="absolute -inset-6 rounded-full pointer-events-none"
@@ -403,9 +403,10 @@ export default function ParallaxHero() {
 
           {/* Pill container — background makes it pop against any scene */}
           <div className="relative flex flex-col items-center gap-3 px-5 py-4 rounded-2xl border border-accent/30"
-            style={{ background: "rgba(10,9,8,0.55)", backdropFilter: "blur(8px)" }}>
+            style={{ background: "rgba(10,9,8,0.6)", backdropFilter: "blur(8px)" }}>
 
-            {/* Mouse icon — bigger, higher contrast */}
+            {/* Mouse icon — the animated dot already implies scroll direction,
+                no need for a separate chevron below it (was redundant) */}
             <div className="relative w-7 h-11 rounded-full border-[1.5px] border-accent flex justify-center pt-2.5">
               <motion.div
                 className="w-1.5 h-2 rounded-full bg-accent"
@@ -414,24 +415,10 @@ export default function ParallaxHero() {
               />
             </div>
 
-            {/* Explicit label — larger, higher contrast */}
-            <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg font-medium">
+            {/* Explicit label */}
+            <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg font-medium whitespace-nowrap">
               Role para explorar
             </span>
-
-            {/* Bouncing double chevron — stronger motion cue */}
-            <div className="flex flex-col items-center -mt-1 -space-y-1.5">
-              <motion.svg width="16" height="9" viewBox="0 0 16 9" fill="none"
-                animate={{ y: [0, 5, 0], opacity: [1, 0.4, 1] }}
-                transition={{ duration: 1.3, repeat: Infinity, ease: "easeInOut", delay: 0 }}>
-                <path d="M1 1L8 8L15 1" stroke="#C9A56C" strokeWidth="1.75" strokeLinecap="round" />
-              </motion.svg>
-              <motion.svg width="16" height="9" viewBox="0 0 16 9" fill="none"
-                animate={{ y: [0, 5, 0], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 1.3, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}>
-                <path d="M1 1L8 8L15 1" stroke="#C9A56C" strokeWidth="1.75" strokeLinecap="round" />
-              </motion.svg>
-            </div>
           </div>
         </motion.div>
       </div>

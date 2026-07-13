@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { SplitLine } from "@/components/split-text";
+import NavMomento from "@/components/nav";
+import FooterMomento from "@/components/footer";
 
 const VALORES = [
   { n: "01", title: "Identidade como argumento", body: "Design não é estética. É a forma mais precisa de comunicar uma posição. Cada escolha visual é um argumento sobre o que a marca acredita." },
@@ -27,15 +29,8 @@ export default function SobreClient() {
       <div className="grain" />
       <div className="vignette" />
 
-      {/* Nav mínima */}
-      <header className="fixed top-0 left-0 right-0 z-50 py-6 px-6 md:px-12 lg:px-16 flex items-center justify-between bg-gradient-to-b from-bg via-bg/80 to-transparent pointer-events-none">
-        <Link href="/" className="pointer-events-auto font-display text-lg text-fg hover:text-accent transition-colors">
-          DOMI<span className="text-accent">.</span>N<span className="text-accent">.</span>ARTE
-        </Link>
-        <Link href="/#momento-5" className="pointer-events-auto font-mono text-[10px] tracking-[0.4em] uppercase text-fg-dim hover:text-fg transition-colors">
-          Contato
-        </Link>
-      </header>
+      {/* Navegação completa e consistente com o resto do site */}
+      <NavMomento />
 
       {/* Hero */}
       <section className="px-6 md:px-12 lg:px-16 pt-40 pb-28 border-b border-border">
@@ -144,12 +139,7 @@ export default function SobreClient() {
         </div>
       </section>
 
-      <footer className="px-6 md:px-12 lg:px-16 py-8 border-t border-border/30">
-        <div className="max-w-[1600px] mx-auto flex items-center justify-between">
-          <Link href="/" className="font-display text-sm text-fg/50 hover:text-fg transition-colors">← Voltar ao início</Link>
-          <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-fg-dim">© 2026 DOMI.N.ARTE</span>
-        </div>
-      </footer>
+      <FooterMomento />
     </main>
   );
 }

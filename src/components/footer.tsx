@@ -1,15 +1,35 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { DEFAULT_SITE_CONFIG } from "@/lib/defaults";
 
-// AÇÃO NECESSÁRIA: substituir os hrefs com suas URLs reais de redes sociais
-const SOCIALS = [
-  { label: "Instagram", href: "https://instagram.com/dominarte" },
-  { label: "Behance",   href: "https://behance.net/dominarte" },
-  { label: "LinkedIn",  href: "https://linkedin.com/company/dominarte" },
+// Fallback socials — used only if the admin hasn't set custom URLs yet,
+// or if the config fetch fails. Real values come from /admin → Settings.
+const FALLBACK_SOCIALS = [
+  { label: "Instagram", href: DEFAULT_SITE_CONFIG.socialInstagram },
+  { label: "Behance",   href: DEFAULT_SITE_CONFIG.socialBehance },
+  { label: "LinkedIn",  href: DEFAULT_SITE_CONFIG.socialLinkedin },
 ];
 
 export default function FooterMomento() {
+  const [socials, setSocials] = useState(FALLBACK_SOCIALS);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((r) => r.json())
+      .then((cfg) => {
+        setSocials([
+          { label: "Instagram", href: cfg.socialInstagram || DEFAULT_SITE_CONFIG.socialInstagram },
+          { label: "Behance",   href: cfg.socialBehance   || DEFAULT_SITE_CONFIG.socialBehance },
+          { label: "LinkedIn",  href: cfg.socialLinkedin  || DEFAULT_SITE_CONFIG.socialLinkedin },
+        ]);
+      })
+      .catch(() => {
+        // keep fallback values — config endpoint may be unavailable
+      });
+  }, []);
+
   return (
     <footer className="relative border-t border-border/50 overflow-hidden">
       {/* Typographic signature */}
@@ -35,7 +55,7 @@ export default function FooterMomento() {
           </div>
 
           <div className="flex flex-wrap items-center gap-6 md:gap-8">
-            {SOCIALS.map(s => (
+            {socials.map((s) => (
               <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
                 className="font-mono text-[9px] tracking-[0.35em] uppercase text-fg-muted hover:text-fg transition-colors duration-300">
                 {s.label}

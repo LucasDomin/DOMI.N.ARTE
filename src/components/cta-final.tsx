@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import ContactForm from "./contact-form";
+import { DEFAULT_SITE_CONFIG } from "@/lib/defaults";
 
 export default function ConviteMomento5() {
   const ref = useRef<HTMLElement>(null);
@@ -14,6 +15,23 @@ export default function ConviteMomento5() {
   const titleY = useTransform(scrollYProgress, [0, 1], [60, 0]);
   const titleO = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
   const glowOp = useTransform(scrollYProgress, [0, 1], [0, 0.1]);
+
+  // Pulls live values from /admin → Settings — falls back to sensible
+  // defaults if the config hasn't been customized yet or fetch fails.
+  const [email, setEmail] = useState(DEFAULT_SITE_CONFIG.contactEmail);
+  const [availability, setAvailability] = useState(DEFAULT_SITE_CONFIG.contactAvailability);
+
+  useEffect(() => {
+    fetch("/api/config")
+      .then((r) => r.json())
+      .then((cfg) => {
+        if (cfg.contactEmail) setEmail(cfg.contactEmail);
+        if (cfg.contactAvailability) setAvailability(cfg.contactAvailability);
+      })
+      .catch(() => {
+        // keep defaults — config endpoint may be unavailable
+      });
+  }, []);
 
   return (
     <section
@@ -67,7 +85,7 @@ export default function ConviteMomento5() {
                 <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg-muted mb-2">
                   Disponibilidade
                 </p>
-                <p className="font-display italic text-xl text-fg">Aceitando projetos para Q3 2026</p>
+                <p className="font-display italic text-xl text-fg">{availability}</p>
               </div>
               <div>
                 <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-fg-muted mb-2">
@@ -86,10 +104,10 @@ export default function ConviteMomento5() {
                   Prefere e-mail direto?
                 </p>
                 <a
-                  href="mailto:ola@dominarte.com.br"
+                  href={`mailto:${email}`}
                   className="font-display text-lg text-fg hover:text-accent transition-colors duration-500"
                 >
-                  ola@dominarte.com.br
+                  {email}
                 </a>
               </div>
             </div>
