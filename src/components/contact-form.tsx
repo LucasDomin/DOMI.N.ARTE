@@ -34,11 +34,12 @@ export default function ContactForm() {
     if (!form.name || !form.email || !form.type) return;
     setState("sending");
 
-    // Send via Formspree or similar — replace endpoint with real one
+    // Envia para nossa própria API — armazenada no banco, visível em
+    // /admin → Mensagens. Sem dependência de serviço terceiro.
     try {
-      const res = await fetch("https://formspree.io/f/placeholder", {
+      const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
       setState(res.ok ? "success" : "error");

@@ -59,6 +59,21 @@ export const clients = pgTable("clients", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Mensagens recebidas pelo formulário de contato — armazenadas diretamente
+// no banco, sem depender de serviço terceiro (Formspree, etc). Visíveis
+// em /admin → Mensagens.
+export const contactSubmissions = pgTable("contact_submissions", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  company: text("company").default(""),
+  email: text("email").notNull(),
+  type: text("type").default(""),
+  budget: text("budget").default(""),
+  message: text("message").default(""),
+  read: boolean("read").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const siteConfig = pgTable("site_config", {
   id: text("id").primaryKey().default("default"),
   manifestoTitle: text("manifesto_title").default(""),
@@ -83,3 +98,5 @@ export type SiteConfig = typeof siteConfig.$inferSelect;
 export type NewSiteConfig = typeof siteConfig.$inferInsert;
 export type Client = typeof clients.$inferSelect;
 export type NewClient = typeof clients.$inferInsert;
+export type ContactSubmission = typeof contactSubmissions.$inferSelect;
+export type NewContactSubmission = typeof contactSubmissions.$inferInsert;
