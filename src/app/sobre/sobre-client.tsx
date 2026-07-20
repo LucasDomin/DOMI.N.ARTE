@@ -13,11 +13,6 @@ const VALORES = [
   { n: "03", title: "Menos, mais fundo", body: "Recusamos projetos que não permitem aprofundamento. Preferimos poucos trabalhos excepcionais a muitos trabalhos mediocres." },
 ];
 
-const DISCIPLINAS = [
-  "Direção Criativa", "Identidade Visual", "Type Design",
-  "Design Editorial", "Motion Design", "Experiência Digital",
-];
-
 export default function SobreClient() {
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start end", "start start"] });
@@ -45,55 +40,6 @@ export default function SobreClient() {
           <p className="font-display italic text-[clamp(1.2rem,2.5vw,2.5rem)] text-fg-muted mt-6 max-w-3xl leading-relaxed">
             Estúdio de direção criativa com raízes em type design e design editorial. Construímos identidades visuais que resistem ao tempo.
           </p>
-        </div>
-      </section>
-
-      {/* Sobre + foto placeholder */}
-      <section className="px-6 md:px-12 lg:px-16 py-28 md:py-40 border-b border-border">
-        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
-
-          <div className="space-y-10">
-            <div>
-              <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim mb-6">Fundador & Diretor Criativo</p>
-              <h2 className="font-display text-[clamp(2rem,4vw,5rem)] leading-none tracking-[-0.04em] text-fg mb-8">
-                Lucas Domingues
-              </h2>
-              <div className="space-y-5 text-sm text-fg-muted leading-relaxed font-light max-w-lg">
-                <p>
-                  Formado em Design com especialização em tipografia e sistemas visuais. Mais de uma década construindo identidades para marcas que precisam de presença inconfundível — não apenas de logos bonitos.
-                </p>
-                <p>
-                  A formação em type design molda cada decisão criativa: a convicção de que proporção, peso e contraste não são escolhas estéticas, são argumentos. Essa obsessão com estrutura tipográfica é o que diferencia nosso trabalho de uma direção de arte convencional.
-                </p>
-                <p>
-                  Atendemos marcas em diferentes estágios — de startups que precisam estabelecer presença imediata a empresas consolidadas que precisam se reposicionar sem perder reconhecimento. O denominador comum é sempre o mesmo: rigor, intenção e profundidade.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3 pt-4">
-              {DISCIPLINAS.map(d => (
-                <span key={d} className="font-mono text-[9px] tracking-[0.3em] uppercase text-fg-dim border border-border px-3 py-1.5 rounded-sm">
-                  {d}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Foto placeholder — substituir com foto real */}
-          <div className="relative aspect-[3/4] bg-bg-card border border-border rounded overflow-hidden max-w-sm lg:max-w-none">
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center px-8">
-              <div className="w-16 h-16 border border-accent/30 rounded-full flex items-center justify-center">
-                <div className="w-4 h-4 rounded-full bg-accent/40" />
-              </div>
-              <p className="font-mono text-[9px] tracking-[0.4em] uppercase text-fg-dim">
-                Foto do fundador
-              </p>
-              <p className="font-mono text-[8px] text-fg-dim/50">
-                Substituir pela imagem real
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
