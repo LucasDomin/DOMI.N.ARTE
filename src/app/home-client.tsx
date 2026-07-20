@@ -14,6 +14,7 @@ import CustomCursor from "@/components/cursor";
 import SectionTransition from "@/components/section-transition";
 import ClientsMarquee from "@/components/clients-marquee";
 import FrentesTabs from "@/components/frentes-tabs";
+import SobreInline from "@/components/sobre-inline";
 import type { Project } from "@/db/schema";
 
 export default function HomePageClient({ initialProjects }: { initialProjects: Project[] }) {
@@ -46,25 +47,31 @@ export default function HomePageClient({ initialProjects }: { initialProjects: P
           {/* 02 — Manifesto */}
           <ManifestoMomento2 />
 
+          {/* Divider */}
+          <SectionTransition number="03" label="Sobre" />
+
+          {/* 03 — Sobre (compacto, incorporado ao fluxo de scroll) */}
+          <SobreInline />
+
           {/* Clients marquee — social proof */}
           <ClientsMarquee />
 
           {/* Divider */}
-          <SectionTransition number="03" label="Galeria de Obras" />
+          <SectionTransition number="04" label="Galeria de Obras" />
 
-          {/* 03 — Works */}
+          {/* 04 — Works */}
           <WorkShowcaseMomento3 initialProjects={initialProjects} />
 
           {/* Divider */}
-          <SectionTransition number="04" label="Método" />
+          <SectionTransition number="05" label="Método" />
 
-          {/* 04 — Process */}
+          {/* 05 — Process */}
           <ProcessMomento4 />
 
           {/* Divider */}
-          <SectionTransition number="05" label="Convite" />
+          <SectionTransition number="06" label="Convite" />
 
-          {/* 05 — CTA */}
+          {/* 06 — CTA */}
           <ConviteMomento5 />
 
           <FooterMomento />

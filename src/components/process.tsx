@@ -86,7 +86,7 @@ export default function ProcessMomento4() {
   return (
     <section ref={ref} id="momento-4"
       className="relative px-6 md:px-12 lg:px-16 py-16 md:py-20 border-b border-border overflow-hidden">
-      <div className="absolute top-6 right-6 font-display text-[12rem] leading-none text-fg/[0.015] select-none pointer-events-none">04</div>
+      <div className="absolute top-6 right-6 font-display text-[12rem] leading-none text-fg/[0.015] select-none pointer-events-none">05</div>
 
       <div className="max-w-[1600px] mx-auto">
         {/* Header — compact, inline */}
@@ -95,7 +95,7 @@ export default function ProcessMomento4() {
           <div>
             <div className="flex items-center gap-3 mb-3">
               <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-              <span className="font-mono text-[10px] tracking-[0.5em] uppercase text-accent">04 / Processo</span>
+              <span className="font-mono text-[10px] tracking-[0.5em] uppercase text-accent">05 / Processo</span>
             </div>
             <h2 className="font-display text-[clamp(2.5rem,5vw,5rem)] leading-none tracking-[-0.04em] text-fg">Método</h2>
           </div>

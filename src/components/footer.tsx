@@ -61,7 +61,7 @@ export default function FooterMomento() {
                 {s.label}
               </a>
             ))}
-            <Link href="/sobre"
+            <Link href="/#momento-sobre"
               className="font-mono text-[9px] tracking-[0.35em] uppercase text-fg-muted hover:text-fg transition-colors duration-300">
               Sobre
             </Link>

@@ -8,7 +8,7 @@ const LINKS = [
   { label: "Galeria",   href: "/#momento-3" },
   { label: "Manifesto", href: "/#momento-2" },
   { label: "Processo",  href: "/#momento-4" },
-  { label: "Sobre",     href: "/sobre" },
+  { label: "Sobre",     href: "/#momento-sobre" },
 ];
 
 export default function NavMomento() {

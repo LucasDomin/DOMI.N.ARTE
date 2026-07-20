@@ -60,7 +60,7 @@ export default function ConviteMomento5() {
         <div className="flex items-center gap-3 mb-10 md:mb-14">
           <div className="w-1.5 h-1.5 rounded-full bg-accent" />
           <span className="font-mono text-[10px] tracking-[0.5em] uppercase text-accent">
-            05 / Contato
+            06 / Contato
           </span>
         </div>
 

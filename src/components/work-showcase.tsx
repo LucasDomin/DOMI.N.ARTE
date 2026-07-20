@@ -210,7 +210,7 @@ export default function WorkShowcaseMomento3({
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
           <div>
             <span className="font-mono text-[9px] tracking-[0.5em] uppercase text-accent block mb-5">
-              03 / Galeria
+              04 / Galeria
             </span>
             <h2 className="font-display text-[clamp(3.5rem,7vw,8rem)] leading-none tracking-[-0.04em] text-fg">
               Obras
